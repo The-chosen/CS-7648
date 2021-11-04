@@ -60,96 +60,45 @@ class Human_Intervention():
             d_abs = np.linalg.norm(d_pos)
             d_dot = self.k * (d_pos @ d_vel.T) / np.linalg.norm(d_pos)
             phi = np.power(self.dmin, 2) - np.power(np.linalg.norm(d_pos), 2) - d_dot
-            #print(f"phi {phi}, obs_states {obs_states}")
-            record_data['phi'].append(phi)
-            
-            # calculate Lie derivative
-            # p d to p robot state and p obstacle state
-            p_d_p_robot_state = np.hstack([np.eye(2), np.zeros((2,2))]) # shape (2, 4)
-            p_d_p_obs_state = np.hstack([-1*np.eye(2), np.zeros((2,2))]) # shape (2, 4)
-            p_d_pos_p_d = np.array([d_pos[0], d_pos[1]]).reshape((1,2)) / d_abs # shape (1, 2)
-            p_d_pos_p_robot_state = p_d_pos_p_d @ p_d_p_robot_state # shape (1, 4)
-            p_d_pos_p_obs_state = p_d_pos_p_d @ p_d_p_obs_state # shape (1, 4)
-
-            # p d_dot to p robot state and p obstacle state
-            p_vel_p_robot_state = np.hstack([np.zeros((2,2)), np.eye(2)]) # shape (2, 4)
-            p_vel_p_obs_state = np.hstack([np.zeros((2,2)), -1*np.eye(2)]) # shape (2, 4)
-            p_d_dot_p_vel = d_pos.reshape((1,2)) / d_abs # shape (1, 2)
-            
-            p_pos_p_robot_state = np.hstack([np.eye(2), np.zeros((2,2))]) # shape (2, 4)
-            p_pos_p_obs_state = np.hstack([-1*np.eye(2), np.zeros((2,2))]) # shape (2, 4)
-            p_d_dot_p_pos = d_vel / d_abs - 0.5 * (d_pos @ d_vel.T) * d_pos / np.power(d_abs, 3) 
-            p_d_dot_p_pos = p_d_dot_p_pos.reshape((1,2)) # shape (1, 2)
-
-            p_d_dot_p_robot_state = p_d_dot_p_pos @ p_pos_p_robot_state + p_d_dot_p_vel @ p_vel_p_robot_state # shape (1, 4)
-            p_d_dot_p_obs_state = p_d_dot_p_pos @ p_pos_p_obs_state + p_d_dot_p_vel @ p_vel_p_obs_state # shape (1, 4)
-
-            p_phi_p_robot_state = -2 * np.linalg.norm(d_pos) * p_d_pos_p_robot_state - \
-                            self.k * p_d_dot_p_robot_state # shape (1, 4)
-            p_phi_p_obs_state = -2 * np.linalg.norm(d_pos) * p_d_pos_p_obs_state - \
-                            self.k * p_d_dot_p_obs_state # shape (1, 4)
-        
-            L_f = p_phi_p_robot_state @ (f @ robot_state.reshape((-1,1))) # shape (1, 1)
-            L_g = p_phi_p_robot_state @ g # shape (1, 2) g contains x information
-            obs_dot = p_phi_p_obs_state @ obs_state[-4:]
-            L_fs.append(L_f)
-            phis.append(phi)  
-            obs_dots.append(obs_dot)
-
             if (phi > 0):
-                L_gs.append(L_g)                                              
-                reference_control_laws.append( -0.5*phi - L_f - obs_dot)
                 is_safe = False
-                danger_indexs.append(i)
-                danger_obs.append(obs_state[:2])
-                # constrain_obs.append(obs_state[:2])
-            '''
-            elif (phi <= 0 and self.is_qp):
-                L_gs.append(L_g)
-                reference_control_laws.append(- L_f - obs_dot)
-                warning_indexs.append(i)
-            '''
         if (not is_safe):
-            # Solve safe optimization problem
-            # min_x (1/2 * x^T * Q * x) + (f^T * x)   s.t. Ax <= b
-            u0 = u0.reshape(-1,1)
-            # u_normal_ssa, _ = self.solve_qp(robot_state, u0, L_gs, reference_control_laws, [1,1])
-            #u_vanilla, reference_control_laws = self.solve_qp(robot_state, u0, L_gs, reference_control_laws, phis, np.eye(2), danger_indexs, warning_indexs)
-            qp_parameter = self.find_qp(robot_state, obs_states, u0.flatten())
-            u, reference_control_laws = self.solve_qp(robot_state, u0, L_gs, reference_control_laws, phis, qp_parameter, danger_indexs, warning_indexs)
-            #print(f"u0 {u0}, ssa {u_vanilla}, ssa_qp {u}, robot_state {robot_state}, obs_states {obs_states}")
-            #reward_normal_ssa = robot_state[1] + (robot_state[3] + u_normal_ssa[1]) + 1
-            reward_qp_ssa = robot_state[1] + (robot_state[3] + u[1]) + 1
-            #print(f"ssa reward {reward_normal_ssa}, reward_qp_ssa {reward_qp_ssa}, acc ssa {self.acc_reward_normal_ssa}, {self.acc_reward_qp_ssa}")
-            #self.acc_reward_normal_ssa += reward_normal_ssa
-            self.acc_reward_qp_ssa += reward_qp_ssa
+            # TODO
+            direction = input()
+            acc_ratio = input()
+            u = np.array([None, None], dtype='float64')
+            if direction == 'q':
+                u = np.array([-1, 1])
+            elif direction == 'w':
+                u = np.array([0, 1])
+            elif direction =='e':
+                u = np.array([1, 1])
+            elif direction =='d':
+                u = np.array([1, 0])
+            elif direction =='c':
+                u = np.array([1, -1])
+            elif direction =='x':
+                u = np.array([0, -1])
+            elif direction =='z':
+                u = np.array([-1, -1])
+            elif direction =='a':
+                u = np.array([-1, 0])
+            elif direction =='s':
+                u = np.array([0, 0])
+
+            acc_ratio = int(acc_ratio)
+            ratio = ((acc_ratio / 9.0) * self.max_acc)
+            u = u * ratio
+
+
             
-            phi_dots = []
-            phi_dots_vanilla = []
-            unavoid_collision = False
-            
-            '''
-            for i in range(len(L_gs)):
-                phi_dot = L_fs[i] + L_gs[i] @ u + obs_dots[i]
-                phi_dot_vanilla = L_fs[i] + L_gs[i] @ u_vanilla + obs_dot
-                phi_dots.append(phi_dot)
-                phi_dots_vanilla.append(phi_dot_vanilla)
-                record_data['phi_dot'].append(phi_dot)
-                if (phi_dot > 0 or (phis[i] + phi_dot) > 0):
-                    unavoid_collision = True
-            '''
-            #print(f"phi_dots_vanilla {phi_dots_vanilla}, phi_dots {phi_dots}")
-            #if (unavoid_collision):
-            #    print(f'collision unavoidable!!!!!!!!!!!!!!!!!!!!!!!')
-            record_data['control'] = u
-            record_data['is_safe_control'] = True
-            #self.records.append(record_data)
-            return u, True, unavoid_collision, danger_obs                            
+
+            return u, True                          
         u0 = u0.reshape(1,2)
         u = u0
         record_data['control'] = u[0]
         self.records.append(record_data)     
-        return u[0], False, False, danger_obs
+        return u[0], False#, False, danger_obs
 
     def check_same_direction(self, pcontrol, perpendicular_controls):
         if (len(perpendicular_controls) == 0):

@@ -34,6 +34,13 @@ pip install gym
 pip install cvxopt
 ```
 
+or
+
+```
+conda create -n safe-rl python=3.7.9 -y
+pip install -r requirements.txt
+```
+
 ## Usage
 
 ```

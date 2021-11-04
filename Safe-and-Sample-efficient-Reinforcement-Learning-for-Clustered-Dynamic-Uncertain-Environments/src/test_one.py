@@ -38,6 +38,7 @@ from pe_model import PE
 from fake_env import FakeEnv
 from ssa import SafeSetAlgorithm
 
+from human_demo import Human_Intervention
 '''
 random.seed(1)
 np.random.seed(1)
@@ -123,7 +124,7 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
     ssa_replay_buffer = ReplayBuffer(state_dim = state_dim, action_dim = craft_action_size, max_size=int(1e6))
     # ssa
     safe_controller = SafeSetAlgorithm(max_speed = env.craft_state.max_speed, fake_env = fake_env, is_qp = qp)
-
+    demo_controller = Human_Intervention(max_speed = env.craft_state.max_speed, fake_env = fake_env, is_qp = qp) # Human Intervention
     # parameters
     max_steps = int(1e6)
     start_timesteps = 2e3
@@ -171,7 +172,7 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
       unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
       original_action = action
       #action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
-      action, is_safe = human_.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
+      action, is_safe = demo_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action) # Human Intervention
       is_safe = False
       # take safe action
       s_new, reward, done, info = env.step(action, is_safe, unsafe_obstacle_ids) 
