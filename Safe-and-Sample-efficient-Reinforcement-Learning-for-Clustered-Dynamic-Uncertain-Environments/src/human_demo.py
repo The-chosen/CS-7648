@@ -5,7 +5,8 @@ import sys
 import collections
 
 class Human_Intervention():
-    def __init__(self, max_speed, fake_env = None, is_qp = False, dmin = 0.12, k = 1, max_acc = 0.04, max_steering = np.pi/2):
+    def __init__(self, max_speed, fake_env = None, is_qp = False, dmin = 0.05, k = 1, max_acc = 0.04, max_steering = np.pi/2):
+        # dmin change from 0.12 -> 0.05
         """
         Args:
             dmin: dmin for phi
@@ -64,8 +65,19 @@ class Human_Intervention():
                 is_safe = False
         if (not is_safe):
             # TODO
-            direction = input()
-            acc_ratio = input()
+            flag = True
+            while flag:
+                direction = input()
+                is_direction_input_right = direction in 'qwedcxzas'
+                acc_ratio = input()
+                is_acc_ratio_input_right = acc_ratio in [str(i) for i in range(1, 10)]
+                # print(direction == '\n')
+                # print('------')
+                # print(is_direction_input_right)
+                if is_acc_ratio_input_right and is_direction_input_right:
+                    flag = False
+                else:
+                    print("\n[Error] Input Wrong! Enter direction and Acc-Ratio Again!")
             u = np.array([None, None], dtype='float64')
             if direction == 'q':
                 u = np.array([-1, 1])
@@ -89,9 +101,6 @@ class Human_Intervention():
             acc_ratio = int(acc_ratio)
             ratio = ((acc_ratio / 9.0) * self.max_acc)
             u = u * ratio
-
-
-            
 
             return u, True                          
         u0 = u0.reshape(1,2)

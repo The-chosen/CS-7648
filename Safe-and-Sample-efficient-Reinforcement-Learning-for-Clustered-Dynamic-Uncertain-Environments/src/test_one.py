@@ -94,11 +94,18 @@ def parser():
                    default='none' )
     prsr.add_argument( '--qp',dest='is_qp', action='store_true')
     prsr.add_argument( '--no-qp',dest='is_qp', action='store_false')
-    prsr.add_argument( '--ssa-buffer',dest='enable_ssa_buffer', action='store_true')
-    prsr.add_argument( '--no-ssa-buffer',dest='enable_ssa_buffer', action='store_false')
+    # prsr.add_argument( '--ssa-buffer',dest='enable_ssa_buffer', action='store_true')
+    # prsr.add_argument( '--no-ssa-buffer',dest='enable_ssa_buffer', action='store_false')
+
+    prsr.add_argument( '--mode',
+                   choices=('rl','safe','human'),
+                   default='rl' )
+    # prsr.add_argument('--human', type=bool, default=False)
+    prsr.add_argument('--isHumanBuffer', type=bool, default=False)
+    # prsr.add_argument('--bufferLocation', type=str, default='')
     return prsr
 
-def main(display_name, exploration, qp, enable_ssa_buffer):
+def main(display_name, exploration, qp, is_human_buffer, mode):
     # testing env
     try:
         params = param.params
@@ -122,9 +129,16 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
     policy_replay_buffer = ReplayBuffer(state_dim = state_dim, action_dim = craft_action_size, max_size=int(1e6))
     policy = TD3(state_dim, craft_action_size, env.max_acc, env.max_acc, exploration = exploration)
     ssa_replay_buffer = ReplayBuffer(state_dim = state_dim, action_dim = craft_action_size, max_size=int(1e6))
+    human_replay_buffer = ReplayBuffer(state_dim = state_dim, action_dim = craft_action_size, max_size=int(1e6))
+
+    # YY: Load buffer (human intervention)
+    if is_human_buffer:
+      human_replay_buffer.load_file()
+
+
     # ssa
     safe_controller = SafeSetAlgorithm(max_speed = env.craft_state.max_speed, fake_env = fake_env, is_qp = qp)
-    demo_controller = Human_Intervention(max_speed = env.craft_state.max_speed, fake_env = fake_env, is_qp = qp) # Human Intervention
+    human_intervention_controller = Human_Intervention(max_speed = env.craft_state.max_speed, fake_env = fake_env, is_qp = qp) # Human Intervention
     # parameters
     max_steps = int(1e6)
     start_timesteps = 2e3
@@ -151,7 +165,15 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
     is_meet_requirement = False
     reward_records = []
 
+    # # Is choose mode?
+    # last_done = True
+    # mode_choice = None
+     
     for t in range(max_steps):
+      # Save network model when training 100 episodes
+      if episode_num == 100:
+        policy.save('100eps')
+
       # disturb the policy parameters at beginning of each episodes when using PSN
       if (exploration == 'psn' and env.cur_step == 0):
         policy.parameter_explore()
@@ -171,8 +193,19 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
       # ssa parameters
       unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
       original_action = action
-      #action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
-      action, is_safe = demo_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action) # Human Intervention
+
+
+
+      # YY
+      if mode == 'human':
+        action, is_safe = human_intervention_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action) # Human Intervention      
+      if mode == 'safe':
+        action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
+      else: # Regular - RL
+        pass
+
+
+
       is_safe = False
       # take safe action
       s_new, reward, done, info = env.step(action, is_safe, unsafe_obstacle_ids) 
@@ -186,34 +219,61 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
         loss = np.sum(np.square(q_fixed - q_train))      
         reward += loss      
       
+
       env.display_end()
-      # Store data in replay buffer
-      if (enable_ssa_buffer):
+
+
+      # Store data in replay buffer (human-replay-buffer/safe-replay-buffer/None)
+      if mode == 'human':
+        human_replay_buffer.add(state, action, s_new, reward, done)
+      if mode == 'safe':
         if (is_safe):
           ssa_replay_buffer.add(state, action, s_new, reward, done)          
         else:
           policy_replay_buffer.add(state, action, s_new, reward, done)
-      else:
+      else: # Regular - RL
         policy_replay_buffer.add(state, original_action, s_new, reward, done)
       state = s_new
       
+
+
+
       # train policy
       if (policy_replay_buffer.size > 1024):
         state_batch, action_batch, next_state_batch, reward_batch, not_done_batch =  [np.array(x) for x in policy_replay_buffer.sample(256)]
-        if enable_ssa_buffer and ssa_replay_buffer.size > 128:
+        if mode == 'safe' and ssa_replay_buffer.size > 128:
             model_batch_size = int(0.4*256) # batch size is 256, ratio is 0.4
             idx = np.random.choice(256, model_batch_size, replace=False)
             state_batch[idx], action_batch[idx], next_state_batch[idx], reward_batch[idx], not_done_batch[idx] =  ssa_replay_buffer.sample(model_batch_size)
+
+        if mode == 'human' and human_replay_buffer.size > 128:
+            model_batch_size = int(0.4*256) # batch size is 256, ratio is 0.4
+            idx = np.random.choice(256, model_batch_size, replace=False)
+            state_batch[idx], action_batch[idx], next_state_batch[idx], reward_batch[idx], not_done_batch[idx] =  human_replay_buffer.sample(model_batch_size)            
+
         policy.train_on_batch(state_batch, action_batch, next_state_batch, reward_batch, not_done_batch)
+
+
+
+
+
 
       if (done and original_reward == -500):          
         #print(safe_controller.records) 
         collision_num += 1        
       elif (done and original_reward == 2000):
         success_num += 1
+        # YY: Decide save to buffer or not
+        if mode == 'human':
+          is_save_buffer = input(">> Success! Save buffer or not? [y/n]: ")
+          if is_save_buffer == 'y':
+            human_replay_buffer.save_file()
       elif (done):
         failure_num += 1
       
+
+
+
       if (done):      
         total_steps += env.cur_step
         #print(f"Train: episode_num {episode_num}, total_steps {total_steps}, reward {episode_reward}, is_qp {qp}, exploration {exploration}, last state {state[:4]}")
@@ -221,6 +281,7 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
         episode_reward = 0
         episode_num += 1
         state, done = env.reset(), False
+        last_done = True
 
       # check reward threshold
       '''
@@ -241,6 +302,18 @@ def main(display_name, exploration, qp, enable_ssa_buffer):
         if (len(reward_records) == 100):
           break
       '''
+
+      # Record rewards
+      # if done:
+      #   env.save_env()
+      #   eval_reward = eval(policy, env, safe_controller, fx, gx)
+      #   # print(f"t {t}, eval_reward {eval_reward}")
+      #   f = open('rewards.txt', 'a')
+      #   f.write('t: ' + str(t) + ', eval_reward: ' + str(eval_reward) + '\n')
+      #   reward_records.append(eval_reward)
+      #   env.read_env()
+      #   if (len(reward_records) == 100):
+      #     break
 
     return reward_records
 
@@ -270,7 +343,8 @@ if __name__ == '__main__':
       reward_records = main(display_name = args.display, 
           exploration = args.explore,
           qp = args.is_qp,
-          enable_ssa_buffer = args.enable_ssa_buffer)
+          is_human_buffer=args.isHumanBuffer,
+          mode=args.mode)
       for j, n in enumerate(reward_records):
         all_reward_records[j].append(n)
       print(all_reward_records)
