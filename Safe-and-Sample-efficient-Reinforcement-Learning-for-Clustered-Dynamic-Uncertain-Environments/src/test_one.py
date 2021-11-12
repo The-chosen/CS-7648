@@ -39,6 +39,7 @@ from fake_env import FakeEnv
 from ssa import SafeSetAlgorithm
 
 from human_demo import Human_Intervention
+import os
 '''
 random.seed(1)
 np.random.seed(1)
@@ -103,9 +104,15 @@ def parser():
     # prsr.add_argument('--human', type=bool, default=False)
     prsr.add_argument('--isHumanBuffer', type=bool, default=False)
     # prsr.add_argument('--bufferLocation', type=str, default='')
+    prsr.add_argument('--saveModelCheckpointPth', type=str, default='./model_checkpoints')
+    prsr.add_argument('--loadModelCheckpointPth', type=str, default='./model_checkpoints/100eps')
+    prsr.add_argument('--isLoadModel', type=bool, default=False)
+    prsr.add_argument('--replaceRatio', type=float, default=0.4)
+    prsr.add_argument('--maxEpisode', type=int, default=5000)
     return prsr
 
-def main(display_name, exploration, qp, is_human_buffer, mode):
+def main(display_name, exploration, qp, is_human_buffer, mode, is_load, \
+    save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode):
     # testing env
     try:
         params = param.params
@@ -165,14 +172,20 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
     is_meet_requirement = False
     reward_records = []
 
-    # # Is choose mode?
-    # last_done = True
-    # mode_choice = None
+    # Load Model
+    if is_load:
+      policy.load(load_model_checkpoint_path) # e.g. ./model_checkpoints/100eps
      
     for t in range(max_steps):
+      if t >= max_episode:
+        print(">> " + str(max_episode) + " episodes done!\n")
+        break
+      
       # Save network model when training 100 episodes
-      if episode_num == 100:
-        policy.save('100eps')
+      if episode_num > 0 and episode_num % 100 == 0:
+        print(">> " + str(episode_num) + " episodes! Save model.")
+        policy.save(os.path.join(save_model_checkpoint_path, str(episode_num) + 'eps'))
+        # break
 
       # disturb the policy parameters at beginning of each episodes when using PSN
       if (exploration == 'psn' and env.cur_step == 0):
@@ -189,7 +202,13 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
           rnd_optimizer.apply_gradients(zip(gradients, rnd_train.trainable_weights))
       
       action = policy.select_action(state)
+
+
+
       env.display_start()
+
+
+
       # ssa parameters
       unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
       original_action = action
@@ -242,12 +261,12 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
       if (policy_replay_buffer.size > 1024):
         state_batch, action_batch, next_state_batch, reward_batch, not_done_batch =  [np.array(x) for x in policy_replay_buffer.sample(256)]
         if mode == 'safe' and ssa_replay_buffer.size > 128:
-            model_batch_size = int(0.4*256) # batch size is 256, ratio is 0.4
+            model_batch_size = int(replace_ratio * 256) # batch size is 256, ratio is 0.4
             idx = np.random.choice(256, model_batch_size, replace=False)
             state_batch[idx], action_batch[idx], next_state_batch[idx], reward_batch[idx], not_done_batch[idx] =  ssa_replay_buffer.sample(model_batch_size)
 
         if mode == 'human' and human_replay_buffer.size > 128:
-            model_batch_size = int(0.4*256) # batch size is 256, ratio is 0.4
+            model_batch_size = int(replace_ratio * 256) # batch size is 256, ratio is 0.4
             idx = np.random.choice(256, model_batch_size, replace=False)
             state_batch[idx], action_batch[idx], next_state_batch[idx], reward_batch[idx], not_done_batch[idx] =  human_replay_buffer.sample(model_batch_size)            
 
@@ -282,6 +301,10 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
         episode_num += 1
         state, done = env.reset(), False
         last_done = True
+        # Show episodes num
+        if episode_num % 5 == 0:
+          print(">> episode_num: ", episode_num)
+
 
       # check reward threshold
       '''
@@ -291,17 +314,17 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
         break
       '''
 
-      # evalution part at every 1000 steps
-      '''
-      if (t % 1000 == 0):
-        env.save_env()
-        eval_reward = eval(policy, env, safe_controller, fx, gx)
-        print(f"t {t}, eval_reward {eval_reward}")
-        reward_records.append(eval_reward)
-        env.read_env()
-        if (len(reward_records) == 100):
-          break
-      '''
+      # # evalution part at every 1000 steps
+      # if (t % 1000 == 0):
+      #   env.save_env()
+      #   eval_reward = eval(policy, env, safe_controller, fx, gx)
+      #   print(f"t {t}, eval_reward {eval_reward}")
+      #   reward_records.append(eval_reward)
+      #   env.read_env()
+      #   # if (len(reward_records) == 100):
+      #   #   break
+
+
 
       # Record rewards
       # if done:
@@ -315,6 +338,8 @@ def main(display_name, exploration, qp, is_human_buffer, mode):
       #   if (len(reward_records) == 100):
       #     break
 
+
+    print(reward_records)
     return reward_records
 
 def eval(policy, env, safe_controller, fx, gx):
@@ -344,7 +369,12 @@ if __name__ == '__main__':
           exploration = args.explore,
           qp = args.is_qp,
           is_human_buffer=args.isHumanBuffer,
-          mode=args.mode)
+          mode=args.mode,
+          is_load=args.isLoadModel,
+          save_model_checkpoint_path=args.saveModelCheckpointPth,
+          load_model_checkpoint_path=args.loadModelCheckpointPth, 
+          replace_ratio=args.replaceRatio,
+          max_episode=args.maxEpisode)
       for j, n in enumerate(reward_records):
         all_reward_records[j].append(n)
       print(all_reward_records)

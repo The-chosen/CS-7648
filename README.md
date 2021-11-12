@@ -38,6 +38,7 @@ or
 
 ```
 conda create -n safe-rl python=3.7.9 -y
+conda activate safe-rl
 pip install -r requirements.txt
 ```
 
