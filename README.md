@@ -46,20 +46,20 @@ pip install -r requirements.txt
 
 ```
 # Train regular RL
-python test_one.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode rl
-python test_one.py --display {none, turtle} --explore {none, psn, rnd} --qp --mode rl
+python train.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode rl
+python train.py --display {none, turtle} --explore {none, psn, rnd} --qp --mode rl
 
 # Train RL with safe controller
-python test_one.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode safe
+python train.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode safe
 
 # Human Intervention Training (First time)
-python test_one.py --display turtle --explore none --no-qp --mode human
+python train.py --display turtle --explore none --no-qp --mode human
 
 # Human Intervention Training (From Second time, Load buffer / If you want to continue your training) 
-python test_one.py --display turtle --explore none --no-qp --mode human --isHumanBuffer True
+python train.py --display turtle --explore none --no-qp --mode human --isHumanBuffer True
 
 # Run RL with human buffer
-python test_one.py --display turtle --explore none --no-qp --mode rl --isHumanBuffer True
+python train.py --display turtle --explore none --no-qp --mode rl --isHumanBuffer True
 ```
 - `--display` can be either `none` or `turtle` (visulization).
 - `--explore` specifies the exploration strategy that the robot uses. 

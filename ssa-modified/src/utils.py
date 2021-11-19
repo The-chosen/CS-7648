@@ -4,6 +4,8 @@
 # pylint: disable=R0902, R0913
 import numpy as np
 import tensorflow as tf
+import json
+import os
 
 class ReplayBuffer():
     '''
@@ -27,6 +29,39 @@ class ReplayBuffer():
         self.next_state = np.zeros((max_size, state_dim))
         self.reward = np.zeros((max_size, 1))
         self.not_done = np.zeros((max_size, 1))
+
+
+    def save_file(self, dir_location='collected_data'):
+        data = {}
+        data['max_size'] = self.max_size
+        data['ptr'] = self.ptr
+        data['size'] = self.size
+        data['state_dim'] = self.state_dim
+        data['action_dim'] = self.action_dim
+        with open(os.path.join(dir_location, 'params.txt'), 'w') as outfile:
+            json.dump(data, outfile)
+
+        np.save(os.path.join(dir_location, 'state.npy'), self.state)
+        np.save(os.path.join(dir_location, 'action.npy'), self.action)
+        np.save(os.path.join(dir_location, 'next_state.npy'), self.next_state)
+        np.save(os.path.join(dir_location, 'reward.npy'), self.reward)
+        np.save(os.path.join(dir_location, 'not_done.npy'), self.not_done)
+    
+    def load_file(self, dir_location='collected_data'):
+        with open(os.path.join(dir_location, 'params.txt')) as json_file:
+            data = json.load(json_file)
+            self.max_size = data['max_size']
+            self.ptr = data['ptr']
+            self.size = data['size']
+            self.state_dim = data['state_dim']
+            self.action_dim = data['action_dim']
+        
+        self.state = np.load(os.path.join(dir_location, 'state.npy'))
+        self.action = np.load(os.path.join(dir_location, 'action.npy'))
+        self.next_state = np.load(os.path.join(dir_location, 'next_state.npy'))
+        self.reward = np.load(os.path.join(dir_location, 'reward.npy'))
+        self.not_done = np.load(os.path.join(dir_location, 'not_done.npy'))
+
 
 
     def add(self, state, action, next_state, reward, done):
