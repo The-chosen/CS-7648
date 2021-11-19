@@ -1,0 +1,6 @@
+future
+tensorflow==2.2.1
+keras
+matplotlib
+gym
+cvxopt

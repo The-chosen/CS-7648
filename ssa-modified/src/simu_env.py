@@ -65,6 +65,7 @@ class Env(object):
 	def reset(self):
 		self.cur_step = 0
 		self.robot_state = copy.deepcopy(self.init_robot_state)
+		# 生成initial, static position 那些   
 		self.display.setup( self.field.x_bounds, self.field.y_bounds,
 							self.in_bounds, self.goal_bounds,
 							margin = self.min_dist)

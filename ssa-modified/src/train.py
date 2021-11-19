@@ -80,6 +80,7 @@ def run_kwargs( params ):
     in_bounds = bounds.BoundsRectangle( **params['in_bounds'] )
     goal_bounds = bounds.BoundsRectangle( **params['goal_bounds'] )
     min_dist = params['min_dist']
+    # TODO 这里传param.py的参数
     ret = { 'field': dynamic_obstacle.ObstacleField(),
             'robot_state': robot.DoubleIntegratorRobot( **( params['initial_robot_state'] ) ),
             'in_bounds': in_bounds,

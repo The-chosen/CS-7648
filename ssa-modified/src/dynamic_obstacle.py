@@ -30,9 +30,9 @@ class Obstacle():
     def __init__(self,
                  a_x, b_x, c_x,
                  a_y, b_y, c_y, t_start):
-        self.a_x = a_x / 5
-        self.b_x = b_x
-        self.c_x = c_x
+        self.a_x = a_x / 5 # accelerate
+        self.b_x = b_x # velocitu
+        self.c_x = c_x # pos
         self.a_y = a_y / 5
         self.b_y = b_y
         self.c_y = c_y
@@ -86,6 +86,7 @@ class ObstacleField(object):
         self.y_bounds = y_bounds
 
     def random_init(self):
+        # TODO: Add some static obs | safety distance(as attr) [attr1: pos, attr2: safety-dis]
         obstacles = []
         for i in range(50):
             obstacles.append(self.random_init_obstacle(t = -100))
@@ -98,7 +99,7 @@ class ObstacleField(object):
         while (dist < min_dist):
             x = random.uniform(FIELD_X_BOUNDS[0],FIELD_X_BOUNDS[1])
             y = random.uniform(FIELD_Y_BOUNDS[0],FIELD_Y_BOUNDS[1])
-            dist = math.sqrt((vehicle_x-x)**2 + (vehicle_y-y)**2)
+            dist = math.sqrt((vehicle_x-x)**2 + (vehicle_y-y)**2) # distance to car TODO: add a dist from static obs
         b_x = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
         b_y = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
         a_x = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
