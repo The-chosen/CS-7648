@@ -43,7 +43,7 @@ class Env(object):
                     noise_sigma,
                     in_bounds,
                     goal_bounds,
-                    nsteps):
+                    nsteps, static_obs):
 
 		self.init_robot_state = copy.deepcopy(robot_state)
 		self.robot_state = copy.deepcopy(self.init_robot_state)
@@ -61,6 +61,7 @@ class Env(object):
 		self.max_steering = np.pi / 8
 
 		self.forecast_steps = 5
+		self.static_obs = static_obs
 
 	def reset(self):
 		self.cur_step = 0
@@ -68,7 +69,7 @@ class Env(object):
 		# 生成initial, static position 那些   
 		self.display.setup( self.field.x_bounds, self.field.y_bounds,
 							self.in_bounds, self.goal_bounds,
-							margin = self.min_dist)
+							margin = self.min_dist, static_obs = self.static_obs)
 		self.field.random_init() # randomize the init position of obstacles
 		cx,cy,_ = self.robot_state.position
 		obstacle_id, obstacle_pos, _ = self.find_nearest_obstacle(cx,cy)
@@ -95,6 +96,11 @@ class Env(object):
 				nearest_obstacle_id = i
 		if (nearest_obstacle_id == -1):
 			nearest_obstacle = [-1, -1]
+
+		for (x,y), r in zip(self.static_obs['pos'], self.static_obs['radius']):
+			dist, _, _ = l2( (cx,cy), (x,y) )
+			if dist < self.min_dist+r:
+				collisions += (0,)
 		return nearest_obstacle_id, nearest_obstacle, collisions
 
 	def display_start(self):
@@ -133,12 +139,17 @@ class Env(object):
 		done = False
 		arrive = False
 		reward_wo_cost = 0
+		# print((cx, cy), self.goal_bounds)
+		goal_reach = self.goal_bounds.contains( (cx,cy) )
+		# print(goal_reach)
+	
 		if collisions:
 			ret = (NAV_FAILURE_COLLISION, self.cur_step)
 			self.display.navigation_done(*ret)
 			done = True
 			reward = -500
-		elif self.goal_bounds.contains( (cx,cy) ):
+		elif goal_reach:
+      
 			ret = (SUCCESS, self.cur_step)
 			self.display.navigation_done(*ret)
 			done = True

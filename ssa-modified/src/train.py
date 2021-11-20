@@ -30,7 +30,13 @@ import bounds
 import robot # two integrator robot
 import simu_env
 import runner
+
+
 import param
+import param_cross
+import param_circle
+
+
 from turtle_display import TurtleRunnerDisplay
 from utils import ReplayBuffer
 from td3 import TD3
@@ -81,13 +87,13 @@ def run_kwargs( params ):
     goal_bounds = bounds.BoundsRectangle( **params['goal_bounds'] )
     min_dist = params['min_dist']
     # TODO 这里传param.py的参数
-    ret = { 'field': dynamic_obstacle.ObstacleField(),
+    ret = { 'field': dynamic_obstacle.ObstacleField(params['static_obstacles']),
             'robot_state': robot.DoubleIntegratorRobot( **( params['initial_robot_state'] ) ),
             'in_bounds': in_bounds,
             'goal_bounds': goal_bounds,
             'noise_sigma': params['noise_sigma'],
             'min_dist': min_dist,
-            'nsteps': 1000 }
+            'nsteps': 1000, 'static_obs':params['static_obstacles']}
     return ret
 
 def parser():
@@ -120,7 +126,9 @@ def main(display_name, exploration, qp, is_human_buffer, mode, is_load, \
     save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode):
     # testing env
     try:
-        params = param.params
+        # params = param.params
+        # params = param_cross.params
+        params = param_circle.params
     except Exception as e:
         print(e)
         return

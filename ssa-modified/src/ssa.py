@@ -27,7 +27,7 @@ class SafeSetAlgorithm():
         """
         Args:
             robot_state <x, y, vx, vy>
-            obs_state: np array closest static obstacle state <x, y, vx, vy, ax, ay>
+            obs_state: np array closest static obstacle state <x, y, vx, vy, safe_distance>
         """
         u0 = np.array(u0).reshape((2,1))
         robot_vel = np.linalg.norm(robot_state[-2:])
@@ -57,7 +57,7 @@ class SafeSetAlgorithm():
             d_vel = d[2:] # vel 
             d_abs = np.linalg.norm(d_pos)
             d_dot = self.k * (d_pos @ d_vel.T) / np.linalg.norm(d_pos)
-            phi = np.power(self.dmin, 2) - np.power(np.linalg.norm(d_pos), 2) - d_dot
+            phi = np.power(obs_state[4], 2) - np.power(np.linalg.norm(d_pos), 2) - d_dot
             #print(f"phi {phi}, obs_states {obs_states}")
             record_data['phi'].append(phi)
             

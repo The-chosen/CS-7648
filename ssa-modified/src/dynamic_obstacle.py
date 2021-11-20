@@ -29,7 +29,7 @@ class Obstacle():
 
     def __init__(self,
                  a_x, b_x, c_x,
-                 a_y, b_y, c_y, t_start):
+                 a_y, b_y, c_y, t_start, safety_dist, radius):
         self.a_x = a_x / 5 # accelerate
         self.b_x = b_x # velocitu
         self.c_x = c_x # pos
@@ -37,6 +37,8 @@ class Obstacle():
         self.b_y = b_y
         self.c_y = c_y
         self.t_start = t_start
+        self.safety_dist = safety_dist
+        self.radius = radius
 
     @property
     def params(self):
@@ -77,19 +79,22 @@ FIELD_Y_BOUNDS = (-0.95, 1.0)
 
 class ObstacleField(object):
     
-    def __init__(self,
-                 x_bounds = FIELD_X_BOUNDS,
-                 y_bounds = FIELD_Y_BOUNDS):
-
+    def __init__(self, static_obs_info):
+        self.x_bounds = FIELD_X_BOUNDS
+        self.y_bounds = FIELD_Y_BOUNDS
+        self.static_obs_info = static_obs_info
         self.random_init()
-        self.x_bounds = x_bounds
-        self.y_bounds = y_bounds
 
     def random_init(self):
         # TODO: Add some static obs | safety distance(as attr) [attr1: pos, attr2: safety-dis]
         obstacles = []
         for i in range(50):
             obstacles.append(self.random_init_obstacle(t = -100))
+        poses = self.static_obs_info['pos']
+        radius = self.static_obs_info['radius']
+        for i in range(len(poses)):
+            obstacles.append(Obstacle(0, 0, poses[i][0], 0, 0, poses[i][1], -100, 0.08, radius[i])) 
+        
         self.obstacles = obstacles
         return 
 
@@ -104,7 +109,7 @@ class ObstacleField(object):
         b_y = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
         a_x = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
         a_y = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
-        return Obstacle(a_x, b_x, x, a_y, b_y, y, t)
+        return Obstacle(a_x, b_x, x, a_y, b_y, y, t, 0.12, None)
 
     def unsafe_obstacle_locations(self, t, cx, cy, min_dist):    
         locs =  [ (i, a.x(t), a.y(t), a.v_x(t), a.v_y(t), a.a_x, a.a_y)
