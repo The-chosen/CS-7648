@@ -37,5 +37,9 @@ params = {
       1.0, 
       1.2
     ]
+  },
+  'static_obstacles': {
+      'pos': [],
+      'radius': []
   }
 }

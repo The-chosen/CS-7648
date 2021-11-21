@@ -99,7 +99,7 @@ def run_kwargs( params ):
 def parser():
     prsr = argparse.ArgumentParser()
     prsr.add_argument( '--display',
-                       choices=('turtle','text','none'),
+                       choices=('turtle','none'),
                        default='none' )
     prsr.add_argument( '--explore',
                    choices=('psn','rnd','none'),
@@ -126,9 +126,9 @@ def main(display_name, exploration, qp, is_human_buffer, mode, is_load, \
     save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode):
     # testing env
     try:
-        # params = param.params
-        # params = param_cross.params
-        params = param_circle.params
+        #params = param.params
+        params = param_cross.params
+        #params = param_circle.params
     except Exception as e:
         print(e)
         return

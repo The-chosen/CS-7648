@@ -75,7 +75,7 @@ class Obstacle():
         return v_y
 
 FIELD_X_BOUNDS = (-0.95, 0.95)
-FIELD_Y_BOUNDS = (-0.95, 1.0)
+FIELD_Y_BOUNDS = (-0.95, 0.95)
 
 class ObstacleField(object):
     
@@ -109,17 +109,19 @@ class ObstacleField(object):
         b_y = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
         a_x = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
         a_y = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
-        return Obstacle(a_x, b_x, x, a_y, b_y, y, t, 0.12, None)
+        return Obstacle(a_x, b_x, x, a_y, b_y, y, t, 0.12, 0)
 
     def unsafe_obstacle_locations(self, t, cx, cy, min_dist):    
-        locs =  [ (i, a.x(t), a.y(t), a.v_x(t), a.v_y(t), a.a_x, a.a_y)
+        locs =  [ (i, a.x(t), a.y(t), a.v_x(t), a.v_y(t), a.a_x, a.a_y, a.safety_dist, a.radius)
                   for i,a in enumerate(self.obstacles)]
         unsafe_obstacles = []
-        for i,x,y,x_v,y_v,x_a,y_a  in locs:
+        for i,x,y,x_v,y_v,x_a,y_a, safe_dist, r  in locs:
             if self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]:
                 dist, ox, oy = l2([cx,cy], [x,y])
-                if dist < min_dist:
-                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a)])
+                if r==0 and dist < min_dist:
+                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a,safe_dist+r)])
+                elif (r > 0 and dist < r+safe_dist):
+                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a,safe_dist+r)])
         return  unsafe_obstacles
 
 
