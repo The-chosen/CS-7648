@@ -112,6 +112,9 @@ def parser():
     prsr.add_argument( '--mode',
                    choices=('rl','safe','human'),
                    default='rl' )
+    prsr.add_argument( '--env',
+                   choices=('default','cross','circle'),
+                   default='default' )
     # prsr.add_argument('--human', type=bool, default=False)
     prsr.add_argument('--isHumanBuffer', type=bool, default=False)
     # prsr.add_argument('--bufferLocation', type=str, default='')
@@ -122,13 +125,16 @@ def parser():
     prsr.add_argument('--maxEpisode', type=int, default=5000)    
     return prsr
 
-def main(display_name, exploration, qp, is_human_buffer, mode, is_load, \
+def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load, \
     save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode):
     # testing env
     try:
-        #params = param.params
-        params = param_cross.params
-        #params = param_circle.params
+        if (env_name == 'cross'):
+          params = param_cross.params
+        elif (env_name == 'circle'):
+          params = param_circle.params
+        else:
+          params = param.params
     except Exception as e:
         print(e)
         return
@@ -397,7 +403,8 @@ if __name__ == '__main__':
     for i in range(100):
       all_reward_records.append([])
     for i in range(1):
-      reward_records = main(display_name = args.display, 
+      reward_records = main(display_name = args.display,          
+          env_name = args.env,
           exploration = args.explore,
           qp = args.is_qp,
           is_human_buffer=args.isHumanBuffer,
