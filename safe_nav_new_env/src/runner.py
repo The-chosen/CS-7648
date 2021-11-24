@@ -24,7 +24,7 @@ class BaseRunnerDisplay(object):
 
     def setup(self, x_bounds, y_bounds,
               in_bounds, goal_bounds,
-              margin):
+              margin, static_obs):
         pass
     
     def begin_time_step(self, t):

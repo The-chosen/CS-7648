@@ -18,6 +18,14 @@ class BoundsRectangle(object):
         self.y_bounds = y_bounds
 
     def contains(self, xy):
+        # print(xy)
+        # print(self.x_bounds)
+        # print(self.y_bounds)
+        # print((self.x_bounds[0] <= xy[0] <= self.x_bounds[1]))
+        # print((self.y_bounds[0] <= xy[1] <= self.y_bounds[1]))
+        # print((self.x_bounds[0] <= xy[0] <= self.x_bounds[1])
+        #         and (self.y_bounds[0] <= xy[1] <= self.y_bounds[1]))
+        # print('--------')
         return ((self.x_bounds[0] <= xy[0] <= self.x_bounds[1])
                 and (self.y_bounds[0] <= xy[1] <= self.y_bounds[1]))
 

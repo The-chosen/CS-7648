@@ -51,13 +51,15 @@ class SafeSetAlgorithm():
         record_data['phi_dot'] = []
         record_data['is_safe_control'] = False
         record_data['is_multi_obstacles'] = True if len(obs_states) > 1 else False
+        #
         for i, obs_state in enumerate(obs_states):
             d = np.array(robot_state - obs_state[:4])
             d_pos = d[:2] # pos distance
             d_vel = d[2:] # vel 
             d_abs = np.linalg.norm(d_pos)
             d_dot = self.k * (d_pos @ d_vel.T) / np.linalg.norm(d_pos)
-            phi = np.power(obs_state[4], 2) - np.power(np.linalg.norm(d_pos), 2) - d_dot
+            #print(f"obs_states {obs_state} safe distance {obs_state[-1]}, self.dmin {self.dmin}")
+            phi = np.power(obs_state[-1], 2) - np.power(np.linalg.norm(d_pos), 2) - d_dot
             #print(f"phi {phi}, obs_states {obs_states}")
             record_data['phi'].append(phi)
             
@@ -89,7 +91,7 @@ class SafeSetAlgorithm():
         
             L_f = p_phi_p_robot_state @ (f @ robot_state.reshape((-1,1))) # shape (1, 1)
             L_g = p_phi_p_robot_state @ g # shape (1, 2) g contains x information
-            obs_dot = p_phi_p_obs_state @ obs_state[-4:]
+            obs_dot = p_phi_p_obs_state @ obs_state[2:6]
             L_fs.append(L_f)
             phis.append(phi)  
             obs_dots.append(obs_dot)

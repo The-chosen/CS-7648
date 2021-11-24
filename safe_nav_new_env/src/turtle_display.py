@@ -31,7 +31,7 @@ class TurtleRunnerDisplay( runner.BaseRunnerDisplay ):
 
     def setup(self, x_bounds, y_bounds,
               in_bounds, goal_bounds,
-              margin):
+              margin, static_obs):
         self.x_bounds = x_bounds
         self.y_bounds = y_bounds
         self.margin = margin
@@ -51,11 +51,38 @@ class TurtleRunnerDisplay( runner.BaseRunnerDisplay ):
 
         self._draw_goal(goal_bounds)
         self._draw_inbounds(in_bounds)
+        self._draw_static_obs(static_obs)
 
         self.robot_turtle = turtle.Turtle()
         self.robot_turtle.shape("triangle")
         self.robot_turtle.shapesize(0.3, 0.5)
         self.robot_turtle.penup()
+        
+        
+    def _draw_static_obs(self, static_obs):
+        poses = static_obs['pos']
+        radius = static_obs['radius']
+        for i in range(len(poses)):
+            trtl = turtle.Turtle()
+            # trtl.shape("circle")
+            # trtl.color("grey")
+            # trtl.shapesize(radius[i], radius[i])
+            trtl.penup()
+            trtl.setposition(poses[i][0], poses[i][1] - radius[i])
+            trtl.pendown()
+            # set the fillcolor
+            trtl.fillcolor("grey")
+            
+            # start the filling color
+            trtl.begin_fill()
+            
+            # drawing the circle of radius r
+            trtl.circle(radius[i])
+            
+            # ending the filling of the color
+            trtl.end_fill()
+
+
 
     def _draw_inbounds(self, in_bounds):
         t = turtle.Turtle()

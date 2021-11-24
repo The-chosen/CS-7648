@@ -34,4 +34,6 @@ class DoubleIntegratorRobot():
             new_x = 1 + (new_x + 1) 
         if (new_y < -1):
             new_y = -1
+        if (new_y > 1):
+            new_y = 1
         return DoubleIntegratorRobot(x = new_x, y = new_y, vx = self.v_x, vy = self.v_y, max_speed = self.max_speed)
