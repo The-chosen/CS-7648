@@ -1,7 +1,7 @@
 file to change:
 
 asteriod.py vs dynamic_obstacles.py (done)
-robot.py vs craft.py
+robot.py vs craft.py (done, not much change needed)
 
 train.py vs test_one.py
 turtle_diplay.py

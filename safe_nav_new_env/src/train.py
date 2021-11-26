@@ -1,17 +1,3 @@
-from __future__ import print_function
-from __future__ import absolute_import
-
-######################################################################
-# This file copyright the Georgia Institute of Technology
-#
-# Permission is given to students to use or modify this file (only)
-# to work on their assignments.
-#
-# You may NOT publish this file or make it available to others not in
-# the course.
-#
-######################################################################
-
 # python modules
 import argparse
 import importlib
@@ -31,13 +17,10 @@ import robot # two integrator robot
 import simu_env
 import runner
 
-
 import param
 import param_cross
 import param_circle
 
-
-from turtle_display import TurtleRunnerDisplay
 from utils import ReplayBuffer
 from td3 import TD3
 # from pe_model import PE
@@ -45,6 +28,13 @@ from td3 import TD3
 from ssa import SafeSetAlgorithm
 from cautious_rl import ProbabiilisticShield
 from cbf import ControlBarrierFunction
+
+
+# Display
+# TODO: switch to pyglet
+# https://github.com/openai/multiagent-particle-envs
+from display import BaseDisplay
+# from turtle_display import TurtleRunnerDisplay
 
 
 from human_demo import Human_Intervention
@@ -76,10 +66,9 @@ class RND(keras.Model):
 
 def display_for_name( dname ):
     # choose none display or visual display
-    if dname == 'turtle':
-        return TurtleRunnerDisplay(800,800)
-    else:
-        return runner.BaseRunnerDisplay()
+    # if dname == 'turtle':
+    #     return TurtleRunnerDisplay(800,800)
+    return BaseDisplay()
 
 
 def run_kwargs( params ):
