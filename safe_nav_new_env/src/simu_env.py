@@ -69,7 +69,7 @@ class Env(object):
 		# 生成initial, static position 那些   
 		self.display.setup( self.field.x_bounds, self.field.y_bounds,
 							self.in_bounds, self.goal_bounds,
-							margin = self.min_dist, static_obs = self.static_obs)
+							margin = self.min_dist, static_obstacles = self.static_obs)
 		self.field.random_init() # randomize the init position of obstacles
 		cx,cy,_ = self.robot_state.position
 		obstacle_id, obstacle_pos, _ = self.find_nearest_obstacle(cx,cy)
@@ -167,6 +167,8 @@ class Env(object):
 			reward = 0 #(cy+1) - min((0.1 / relative_dist), 1)
 			reward_wo_cost = 0 #(cy+1)
 		info = {'arrive':arrive, 'reward_wo_cost':reward_wo_cost}
+
+		self.display.render()
 		return np.array(next_state), reward, done, info
 
 	def random_action(self):

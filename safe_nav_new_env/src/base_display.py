@@ -1,5 +1,3 @@
-import numpy as np
-
 class BaseDisplay():
 
     def setup(self, x_bounds, y_bounds,
@@ -47,4 +45,10 @@ class BaseDisplay():
         pass
 
     def teardown(self):
+        pass
+
+    def render(self):
+        pass
+
+    def _reset(self):
         pass

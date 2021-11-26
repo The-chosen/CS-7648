@@ -15,7 +15,6 @@ import dynamic_obstacle
 import bounds
 import robot # two integrator robot
 import simu_env
-import runner
 
 import param
 import param_cross
@@ -33,9 +32,8 @@ from cbf import ControlBarrierFunction
 # Display
 # TODO: switch to pyglet
 # https://github.com/openai/multiagent-particle-envs
-from display import BaseDisplay
-# from turtle_display import TurtleRunnerDisplay
-
+from base_display import BaseDisplay
+from pyglet_display import PygletDisplay
 
 from human_demo import Human_Intervention
 import os
@@ -68,7 +66,10 @@ def display_for_name( dname ):
     # choose none display or visual display
     # if dname == 'turtle':
     #     return TurtleRunnerDisplay(800,800)
-    return BaseDisplay()
+    if dname == 'pyglet':
+         return PygletDisplay(800,800)
+    else:
+      return BaseDisplay()
 
 
 def run_kwargs( params ):
@@ -88,7 +89,7 @@ def run_kwargs( params ):
 def parser():
     prsr = argparse.ArgumentParser()
     prsr.add_argument( '--display',
-                       choices=('turtle','none'),
+                       choices=('turtle','pyglet','none'),
                        default='none' )
     prsr.add_argument( '--explore',
                    choices=('psn','rnd','none'),

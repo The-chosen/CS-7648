@@ -28,9 +28,9 @@ def l2( xy0, xy1 ):
 class Obstacle():
     # obstacles in 2d space [x, y]
     def __init__(self, acc_start, vel_start, pos_start, t_start, safety_dist, radius):
-        self.acc = acc_start / 5 # accelerate
-        self.vel = vel_start # velocitu
-        self.pos = pos_start # pos
+        self.acc = np.array(acc_start) / 5 # accelerate
+        self.vel = np.array(vel_start) # velocitu
+        self.pos = np.array(pos_start) # pos
         self.t = t_start
         self.safety_dist = safety_dist
         self.radius = radius
