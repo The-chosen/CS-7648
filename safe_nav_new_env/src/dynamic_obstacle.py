@@ -46,6 +46,8 @@ class Obstacle():
 
     def update_loc(self, t):
         t_duration = t - self.t
+        # self.acc = np.array([0.0, 0.0])
+        # self.vel = np.array([0.0, 0.0])
         loc = (self.acc* t_duration * t_duration) + (self.vel * t_duration) + self.pos
         return loc
 
@@ -90,7 +92,7 @@ class ObstacleField(object):
             dist = np.linalg.norm(pos-pos_vehicle)
             #TODO (distance to car): add a dist from static obs
         vel = np.random.uniform(1e-3, 1e-2, 2) * random.choice([1,-1])
-        acc = np.random.uniform(5e-6, 1e-4, 2) * random.choice([1,-1])
+        acc = np.random.uniform(5e-6, 1e-5, 2) * random.choice([1,-1])
         return Obstacle(acc, vel, pos, t, 0.12, 0)
 
     def unsafe_obstacle_locations(self, t, cx, cy, min_dist):
@@ -104,7 +106,7 @@ class ObstacleField(object):
                     [x_v,y_v] = obstacle.vel
                     [x_a,y_a] = obstacle.acc
                     unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a)])
-        return  unsafe_obstacles
+        return unsafe_obstacles
 
 
     def obstacle_locations(self, t, vehicle_x, vehicle_y, min_dist):

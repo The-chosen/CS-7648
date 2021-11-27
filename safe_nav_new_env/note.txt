@@ -9,5 +9,5 @@ runner.py (done, not much change needed)
 
 TODO:
 ** need to update requirement for "pip install pyglet --user"
-Slow color chanages on nearby objects
+Slow color chanages on nearby objects due to the new dynamic_obstacle.py 
 Show robots that reach the goal area

@@ -118,8 +118,6 @@ class PygletDisplay(BaseDisplay):
 
 
     def begin_time_step(self, t):
-        self.obstacles = {}
-
         pass
 
     def end_time_step(self, t):
@@ -135,6 +133,7 @@ class PygletDisplay(BaseDisplay):
             self.obstacles[i] = (geom, xform)
 
         (geom, xform) = self.obstacles[i]
+        geom.set_color(0.3, 0.3, 0.3)
         xform.set_translation(x, y)
         pass
 
@@ -143,14 +142,14 @@ class PygletDisplay(BaseDisplay):
             color_rgb = (0.3, 0.3, 0.3)
         elif color == 'blue':
             color_rgb = (0.0, 0.0, 1.0)
-
-        for idx, obstacle in list(self.obstacles.items()):
-            (geom, xform) = obstacle
-            geom.set_color(0.3, 0.3, 0.3)
+        elif color == 'red':
+        		color_rgb = (1.0, 0.1, 0.0)
 
         if i in self.obstacles:
             (geom, xform) = self.obstacles[i]
             geom.set_color(*color_rgb)
+        else:
+        		print('cannot find obstacles in display')
 
     def robot_at_loc(self, x, y, h, is_ssa = False):
         if self.robot is not None:

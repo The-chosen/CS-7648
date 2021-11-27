@@ -14,10 +14,8 @@ params = {
   "_args": {
     "noise_sigma": 0.03, 
     "min_dist": 0.03, 
-    "asteroid_b_max": 0.01, 
     "robot_max_speed": 0.03, 
     "t_step": 2, 
-    "asteroid_a_max": 0.0001, 
     "t_future": 1000, 
     "t_past": -100
   }, 

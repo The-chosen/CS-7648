@@ -28,7 +28,6 @@ from ssa import SafeSetAlgorithm
 from cautious_rl import ProbabiilisticShield
 from cbf import ControlBarrierFunction
 
-
 # Display
 # TODO: switch to pyglet
 # https://github.com/openai/multiagent-particle-envs
@@ -186,12 +185,9 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
     is_meet_requirement = False
     reward_records = []
 
-
     # Load Model
     if is_load:
       policy.load(load_model_checkpoint_path) # e.g. ./model_checkpoints/100eps
-     
-
 
     for t in range(max_steps):
 
@@ -223,7 +219,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       
       # ssa parameters
-      unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
+      unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 10)
       
       # YY
       if mode == 'human':
@@ -301,8 +297,6 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         policy.train_on_batch(state_batch, action_batch, next_state_batch, reward_batch, not_done_batch)
 
       
-      
-      
       # # train policy
       # if (policy_replay_buffer.size > 1024):
       #   state_batch, action_batch, next_state_batch, reward_batch, not_done_batch =  [np.array(x) for x in policy_replay_buffer.sample(256)]
@@ -311,9 +305,6 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       #       idx = np.random.choice(256, model_batch_size, replace=False)
       #       state_batch[idx], action_batch[idx], next_state_batch[idx], reward_batch[idx], not_done_batch[idx] =  ssa_replay_buffer.sample(model_batch_size)
       #   policy.train_on_batch(state_batch, action_batch, next_state_batch, reward_batch, not_done_batch)
-
-
-
 
 
       if (done and original_reward == -500):          
@@ -378,7 +369,7 @@ def eval(policy, env, safe_controller, fx, gx):
   arrives = []
   while (True):
     action = policy.select_action(state)  
-    unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
+    unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist)
     action, _, _,_ = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
     s_new, reward, done, info = env.step(action)
     episode_reward += reward

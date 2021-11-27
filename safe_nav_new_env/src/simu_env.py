@@ -78,14 +78,15 @@ class Env(object):
 		return np.array(state + relative_pos)
 
 	def find_nearest_obstacle(self, cx, cy, unsafe_obstacle_ids = []):
-		astlocs = self.field.obstacle_locations(self.cur_step, cx, cy, self.min_dist * 5)
+		obstlocs = self.field.obstacle_locations(self.cur_step, cx, cy, self.min_dist * 5)
 		nearest_obstacle = None
 		nearest_obstacle_id = -1
 		nearest_obstacle_dist = np.float("inf")    
 		collisions = ()
-		for i,x,y in astlocs:
+		for i,x,y in obstlocs:
 			self.display.obstacle_at_loc(i,x,y)
 			if (i in unsafe_obstacle_ids):
+				pass
 				self.display.obstacle_set_color(i, 'blue')
 			dist, ox, oy = l2( (cx,cy), (x,y) )
 			if dist < self.min_dist:
@@ -233,4 +234,6 @@ class Env(object):
 		unsafe_obstacles = self.field.unsafe_obstacle_locations(self.cur_step, cx, cy, min_dist)
 		unsafe_obstacle_ids = [ele[0] for ele in unsafe_obstacles]
 		unsafe_obstacle_info = [np.array(ele[1]) for ele in unsafe_obstacles]
+
+
 		return unsafe_obstacle_ids, unsafe_obstacle_info
