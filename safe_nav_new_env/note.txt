@@ -4,10 +4,8 @@ asteriod.py vs dynamic_obstacles.py (done)
 robot.py vs craft.py (done, not much change needed)
 
 train.py vs test_one.py (done, not much change needed)
-turtle_diplay.py 
+turtle_diplay.py (change to pyglet)
 runner.py (done, not much change needed)
 
 TODO:
 ** need to update requirement for "pip install pyglet --user"
-Slow color chanages on nearby objects due to the new dynamic_obstacle.py 
-Show robots that reach the goal area
