@@ -149,8 +149,8 @@ class Env(object):
 			self.display.navigation_done(*ret)
 			done = True
 			reward = -500
+		
 		elif goal_reach:
-      
 			ret = (SUCCESS, self.cur_step)
 			self.display.navigation_done(*ret)
 			done = True

@@ -38,6 +38,8 @@ class PygletDisplay(BaseDisplay):
         self.robot = None
         self.exploded_robots_geoms = []
         self.exploded_robots_geoms_xform = []
+        self.reached_robots_geoms = []
+        self.reached_robots_geoms_xform = []
 
 
     def setup(self, x_bounds, y_bounds,
@@ -108,7 +110,7 @@ class PygletDisplay(BaseDisplay):
         self.inbounds_region_geoms_xform.append(xform)
 
     def _add_robot(self):
-        vertices = [[-0.02, 0], [0.02, 0], [0, 0.05]]      
+        vertices = [[0.02, 0], [-0.02, 0], [-0.01, 0.05], [0.01, 0.05]]      
         geom = rendering.make_polygon(vertices)
         xform = rendering.Transform()
         geom.set_color(0.0, 1.0, 1.0)
@@ -160,7 +162,7 @@ class PygletDisplay(BaseDisplay):
         else:
             self.robot[0].set_color(0.1, 0.1, 0.1)
 
-    def _explode_robot(self):
+    def _exploded_robot(self):
         (geom, xform) = self.robot
         explode_pos = (xform.translation[0], xform.translation[1])
         # print("_explode_robot:", explode_pos)
@@ -174,17 +176,34 @@ class PygletDisplay(BaseDisplay):
         self.robot = None
         self.exploded_robots_geoms_xform[-1].set_translation(*explode_pos)
 
-    def collision(self):
-        self._explode_robot()
+    def _reached_robot(self):
+        print("draw reach goal robots")
+        (geom, xform) = self.robot
+        reached_pos = (xform.translation[0], xform.translation[1])
+        print("reached_pos:", reached_pos)
+        geom = rendering.make_circle(0.03)
+        xform = rendering.Transform()
+        geom.set_color(0.2, 0.6, 0.2) # green
+        geom.add_attr(xform)
+        self.reached_robots_geoms.append(geom)
+        self.reached_robots_geoms_xform.append(xform)
 
-    def out_of_bounds(self):
-        self._explode_robot()
+        self.robot = None
+        self.reached_robots_geoms_xform[-1].set_translation(*reached_pos)
+
+    # def collision(self):
+    #     self._exploded_robot()
+
+    # def out_of_bounds(self):
+    #     self._exploded_robot()
 
     def navigation_done(self, retcode, t):
         if retcode in (NAV_FAILURE_COLLISION,
                        NAV_FAILURE_OUT_OF_BOUNDS,
                        FAILURE_TOO_MANY_STEPS):
-            self._explode_robot()
+            self._exploded_robot()
+        elif retcode in (SUCCESS):
+        		self._reached_robot()
 
 
     def render(self):
@@ -197,6 +216,9 @@ class PygletDisplay(BaseDisplay):
             self.viewer.add_geom(geom)
 
         for i, geom in enumerate(self.exploded_robots_geoms):
+            self.viewer.add_geom(geom)
+
+        for i, geom in enumerate(self.reached_robots_geoms):
             self.viewer.add_geom(geom)
 
         for idx, obstacle in list(self.obstacles.items()):

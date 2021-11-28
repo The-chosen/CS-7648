@@ -27,38 +27,37 @@ def l2( xy0, xy1 ):
 
 class Obstacle():
     # obstacles in 2d space [x, y]
-    def __init__(self, acc_start, vel_start, pos_start, t_start, safety_dist, radius):
-        self.acc = np.array(acc_start) / 5 # accelerate
-        self.vel = np.array(vel_start) # velocitu
-        self.pos = np.array(pos_start) # pos
-        self.t = t_start
+    def __init__(self,
+                 a_x, v_x, p_x,
+                 a_y, v_y, p_y, t_start, safety_dist, radius):
+        self.a_x = a_x / 5 # acceleration
+        self.v_x = v_x # velocity
+        self.p_x = p_x # pos
+        self.a_y = a_y / 5
+        self.v_y = v_y
+        self.p_y = p_y
+        self.t_start = t_start
         self.safety_dist = safety_dist
-        self.radius = radius
+        self.r = radius
 
-    @property
-    def params(self):
-        return { 'acc':     self.acc,
-                 'vel':     self.vel,
-                 'pos':     self.pos,
-                 't_start': self.t,
-                 'safety_dist': self.safety_dist,
-                 'radius': self.radius }
+    def pos_update(self, t):
+        delta_t = t - self.t_start
+        x = ((self.a_x * delta_t * delta_t)
+             + (self.v_x * delta_t)
+             + self.p_x)
+        y = ((self.a_y * delta_t * delta_t)
+             + (self.v_y * delta_t)
+             + self.p_y)
+        return x, y
 
-    def update_loc(self, t):
-        t_duration = t - self.t
-        # self.acc = np.array([0.0, 0.0])
-        # self.vel = np.array([0.0, 0.0])
-        loc = (self.acc* t_duration * t_duration) + (self.vel * t_duration) + self.pos
-        return loc
-
-    def update_vel(self, t):
-        t_duration = t - self.t
-        vel = ((2 * self.acc * t_duration) + self.vel)
-        return vel
-
+    def vel_update(self, t):
+        delta_t = t - self.t_start
+        v_x = ((2 * self.a_x * delta_t) + self.v_x)
+        v_y = ((2 * self.a_y * delta_t) + self.v_y)
+        return v_x, v_y
 
 FIELD_X_BOUNDS = (-0.95, 0.95)
-FIELD_Y_BOUNDS = (-0.95, 1.0)
+FIELD_Y_BOUNDS = (-0.95, 0.95)
 
 class ObstacleField(object):
     
@@ -73,11 +72,11 @@ class ObstacleField(object):
         obstacles = []
         for i in range(50):
             obstacles.append(self.random_init_obstacle(t = -100))
-
         poses = self.static_obs_info['pos']
         radius = self.static_obs_info['radius']
         for i in range(len(poses)):
-            obstacles.append(Obstacle([0, 0], [0, 0], poses[i], -100, 0.08, radius[i])) 
+            obstacles.append(Obstacle(0, 0, poses[i][0], 0, 0, poses[i][1], -100, 0.08, radius[i])) 
+        
         self.obstacles = obstacles
         return 
 
@@ -87,38 +86,37 @@ class ObstacleField(object):
         while (dist < min_dist):
             x = random.uniform(FIELD_X_BOUNDS[0],FIELD_X_BOUNDS[1])
             y = random.uniform(FIELD_Y_BOUNDS[0],FIELD_Y_BOUNDS[1])
-            pos = np.array([x, y])
-            pos_vehicle = np.array([vehicle_x, vehicle_y])
-            dist = np.linalg.norm(pos-pos_vehicle)
-            #TODO (distance to car): add a dist from static obs
-        vel = np.random.uniform(1e-3, 1e-2, 2) * random.choice([1,-1])
-        acc = np.random.uniform(5e-6, 1e-5, 2) * random.choice([1,-1])
-        return Obstacle(acc, vel, pos, t, 0.12, 0)
+            dist = math.sqrt((vehicle_x-x)**2 + (vehicle_y-y)**2) # distance to car TODO: add a dist from static obs
+        v_x = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
+        v_y = random.uniform(1e-3, 1e-2) * random.choice([1,-1])
+        a_x = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
+        a_y = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
+        return Obstacle(a_x, v_x, x, a_y, v_y, y, t, 0.12, 0)
 
-    def unsafe_obstacle_locations(self, t, cx, cy, min_dist):
+    def unsafe_obstacle_locations(self, t, cx, cy, min_dist):    
         unsafe_obstacles = []
-        for i, obstacle in enumerate(self.obstacles):
-            x = obstacle.pos[0]
-            y = obstacle.pos[1]
+        for i, obst in enumerate(self.obstacles):
+            x, y =  obst.pos_update(t)
+            v_x, v_y = obst.pos_update(t)
             if self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]:
                 dist, ox, oy = l2([cx,cy], [x,y])
-                if dist < min_dist:
-                    [x_v,y_v] = obstacle.vel
-                    [x_a,y_a] = obstacle.acc
-                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a)])
-        return unsafe_obstacles
+                unsafe_obstacle_info = [i, (ox,oy,v_x,v_y,obst.a_x,obst.a_y,obst.safety_dist+obst.r)]       		
+                if (obst.r == 0 and dist < min_dist) or (obst.r > 0 and dist < obst.safety_dist+obst.r):
+                    unsafe_obstacles.append(unsafe_obstacle_info)
+        return  unsafe_obstacles
 
 
     def obstacle_locations(self, t, vehicle_x, vehicle_y, min_dist):
         """
-        Returns (i, x, y) tuples showing that the i-th obstacle is at location (x,y).
+        Returns (i, x, y) tuples indicating that the i-th obstacle is at location (x,y).
         """
         locs = []
-        for i, a in enumerate(self.obstacles):
-            pos = a.update_loc(t)
-            if not (self.x_bounds[0] <= pos[0] <= self.x_bounds[1] and self.y_bounds[0] <= pos[1] <= self.y_bounds[1]):
+        for i, obst in enumerate(self.obstacles):
+            x, y =  obst.pos_update(t)
+            loc = (i, x, y)
+            if not (self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]):
+                # out of bound, re-initialize 
                 self.obstacles[i] = self.random_init_obstacle(t, vehicle_x, vehicle_y, min_dist)
-                
-            locs.append((i, pos[0], pos[1]))
-
+            
+            locs.append(loc)
         return locs

@@ -10,7 +10,7 @@ params = {
     ]
   }, 
   "noise_sigma": 0.03, 
-  "min_dist": 0.03, 
+  "min_dist": 0.02, 
   "_args": {
     "noise_sigma": 0.03, 
     "min_dist": 0.03, 

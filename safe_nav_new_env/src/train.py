@@ -88,7 +88,7 @@ def run_kwargs( params ):
 def parser():
     prsr = argparse.ArgumentParser()
     prsr.add_argument( '--display',
-                       choices=('turtle','pyglet','none'),
+                       choices=('pyglet','none'),
                        default='none' )
     prsr.add_argument( '--explore',
                    choices=('psn','rnd','none'),
@@ -219,7 +219,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       
       # ssa parameters
-      unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 10)
+      unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
       
       # YY
       if mode == 'human':
