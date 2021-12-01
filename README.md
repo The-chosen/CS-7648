@@ -46,22 +46,22 @@ pip install -r requirements.txt
 
 ```
 # Train regular RL
-python train.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode rl
-python train.py --display {none, turtle} --explore {none, psn, rnd} --qp --mode rl
+python train.py --display {none, pyglet} --explore {none, psn, rnd} --no-qp --mode rl
+python train.py --display {none, pyglet} --explore {none, psn, rnd} --qp --mode rl
 
 # Train RL with safe controller
-python train.py --display {none, turtle} --explore {none, psn, rnd} --no-qp --mode safe
+python train.py --display {none, pyglet} --explore {none, psn, rnd} --no-qp --mode safe
 
 # Human Intervention Training (First time)
-python train.py --display turtle --explore none --no-qp --mode human
+python train.py --display pyglet --explore none --no-qp --mode human
 
 # Human Intervention Training (From Second time, Load buffer / If you want to continue your training) 
-python train.py --display turtle --explore none --no-qp --mode human --isHumanBuffer True
+python train.py --display pyglet --explore none --no-qp --mode human --isHumanBuffer True
 
 # Run RL with human buffer
-python train.py --display turtle --explore none --no-qp --mode rl --isHumanBuffer True
+python train.py --display pyglet --explore none --no-qp --mode rl --isHumanBuffer True
 ```
-- `--display` can be either `none` or `turtle` (visulization).
+- `--display` can be either `none` or `pyglet` (visulization).
 - `--explore` specifies the exploration strategy that the robot uses. 
 - `--no-qp` means that we use vanilla SSA.
 - `--qp` means that we use adapted SSA.
@@ -69,4 +69,5 @@ python train.py --display turtle --explore none --no-qp --mode rl --isHumanBuffe
 - `--ssa-buffer` means that we use the safe learning from SSA demonstrations. -->
 - `--mode` means that we use which approach: rl/safe/human
 - `--isHumanBuffer` means that use saved human buffer or not.
+- `--env` means the training env we use, if not specified, we use default env. To use other envs, choose either `cross` or `circle`.
 
