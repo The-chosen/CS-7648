@@ -222,10 +222,16 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       unsafe_obstacle_ids, unsafe_obstacles = env.find_unsafe_obstacles(env.min_dist * 6)
       
       # YY
+      #
       if mode == 'human':
         action, is_safe = human_intervention_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action) # Human Intervention      
+        
       if mode == 'safe':
         action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
+        #if (len(unsafe_obstacles) > 0):
+        #  print(f"robot {state[:4]}, obs {unsafe_obstacles}, action {action}")
+        #  import pdb
+        #  pdb.set_trace()
       else: # Regular - RL
         is_safe = False
 

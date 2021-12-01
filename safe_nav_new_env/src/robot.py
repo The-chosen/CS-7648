@@ -24,7 +24,7 @@ class DoubleIntegratorRobot():
     def steer(self, vx_speed_change, vy_speed_change):
 
         self.v_x = max(min(self.v_x + vx_speed_change, self.max_speed), -self.max_speed)
-        self.v_y = max(min(self.v_y + vx_speed_change, self.max_speed), -self.max_speed)
+        self.v_y = max(min(self.v_y + vy_speed_change, self.max_speed), -self.max_speed)
 
         new_x = self.pos[0] + self.v_x
         new_y = self.pos[1] + self.v_y

@@ -92,19 +92,37 @@ class ObstacleField(object):
         a_x = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
         a_y = random.uniform(5e-6, 1e-4) * random.choice([1,-1])
         return Obstacle(a_x, v_x, x, a_y, v_y, y, t, 0.12, 0)
-
+    
     def unsafe_obstacle_locations(self, t, cx, cy, min_dist):    
         unsafe_obstacles = []
         for i, obst in enumerate(self.obstacles):
             x, y =  obst.pos_update(t)
-            v_x, v_y = obst.pos_update(t)
+            v_x, v_y = obst.vel_update(t)
             if self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]:
                 dist, ox, oy = l2([cx,cy], [x,y])
-                unsafe_obstacle_info = [i, (ox,oy,v_x,v_y,obst.a_x,obst.a_y,obst.safety_dist+obst.r)]       		
-                if (obst.r == 0 and dist < min_dist) or (obst.r > 0 and dist < obst.safety_dist+obst.r):
+                unsafe_obstacle_info = [i, (ox,oy,v_x,v_y,obst.a_x,obst.a_y,obst.safety_dist+obst.r)]      
+                if obst.r==0 and dist < min_dist:
                     unsafe_obstacles.append(unsafe_obstacle_info)
+                elif (obst.r > 0 and dist < obst.r+obst.safety_dist):
+                    unsafe_obstacles.append(unsafe_obstacle_info) 		
+                #if (obst.r == 0 and dist < min_dist) or (obst.r > 0 and dist < obst.safety_dist+obst.r):
+                #    unsafe_obstacles.append(unsafe_obstacle_info)
         return  unsafe_obstacles
+    '''
 
+    def unsafe_obstacle_locations(self, t, cx, cy, min_dist):    
+        locs =  [ (i, a.x(t), a.y(t), a.v_x(t), a.v_y(t), a.a_x, a.a_y, a.safety_dist, a.radius)
+                  for i,a in enumerate(self.obstacles)]
+        unsafe_obstacles = []
+        for i,x,y,x_v,y_v,x_a,y_a, safe_dist, r  in locs:
+            if self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]:
+                dist, ox, oy = l2([cx,cy], [x,y])
+                if r==0 and dist < min_dist:
+                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a,safe_dist+r)])
+                elif (r > 0 and dist < r+safe_dist):
+                    unsafe_obstacles.append([i,(ox,oy,x_v,y_v,x_a,y_a,safe_dist+r)])
+        return  unsafe_obstacles
+    '''
 
     def obstacle_locations(self, t, vehicle_x, vehicle_y, min_dist):
         """
