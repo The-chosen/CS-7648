@@ -148,7 +148,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
 
     # YY: Load buffer (human intervention)
     if is_human_buffer:
-      human_replay_buffer.load_file()
+      human_replay_buffer.load_file() # Have a default path: collected_data
     
     
     # ssa
@@ -191,7 +191,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
 
     for t in range(max_steps):
 
-      if t >= max_episode:
+      if episode_num >= max_episode:
         print(">> " + str(max_episode) + " episodes done!\n")
         break
       
@@ -339,10 +339,12 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         episode_reward = 0
         episode_num += 1
         state, done = env.reset(), False
-        if (episode_num >= 100):
-          policy.save("./model/ssa1")
-          break
-        
+        # if (episode_num >= 100):
+        #   policy.save("./model/ssa1")
+        #   break
+        if episode_num > 1 and episode_num % 100 == 0:
+          pth = os.path.join(save_model_checkpoint_path, mode, env_name, str(episode_num // 100))
+          policy.save(pth)
 
       # check reward threshold
       '''

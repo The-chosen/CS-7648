@@ -49,8 +49,12 @@ pip install -r requirements.txt
 python train.py --display {none, pyglet} --explore {none, psn, rnd} --no-qp --mode rl
 python train.py --display {none, pyglet} --explore {none, psn, rnd} --qp --mode rl
 
+> python train.py --display none --explore none --no-qp --mode rl
+
 # Train RL with safe controller
 python train.py --display {none, pyglet} --explore {none, psn, rnd} --no-qp --mode safe
+
+> python train.py --display none --explore none --no-qp --mode safe
 
 # Human Intervention Training (First time)
 python train.py --display pyglet --explore none --no-qp --mode human
