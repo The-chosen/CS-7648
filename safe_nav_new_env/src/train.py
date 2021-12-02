@@ -32,7 +32,7 @@ from cbf import ControlBarrierFunction
 # TODO: switch to pyglet
 # https://github.com/openai/multiagent-particle-envs
 from base_display import BaseDisplay
-from pyglet_display import PygletDisplay
+# from pyglet_display import PygletDisplay
 
 from human_demo import Human_Intervention
 import os
@@ -111,7 +111,7 @@ def parser():
     prsr.add_argument('--loadModelCheckpointPth', type=str, default='./model_checkpoints/100eps')
     prsr.add_argument('--isLoadModel', type=bool, default=False)
     prsr.add_argument('--replaceRatio', type=float, default=0.4)
-    prsr.add_argument('--maxEpisode', type=int, default=5000)    
+    prsr.add_argument('--maxEpisode', type=int, default=501)    
     return prsr
 
 def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load, \
