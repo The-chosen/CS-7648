@@ -148,7 +148,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
 
     # YY: Load buffer (human intervention)
     if is_human_buffer:
-      human_replay_buffer.load_file() # Have a default path: collected_data
+      human_replay_buffer.load_file(os.path.join('collected_data', env_name)) # Have a default path: collected_data
     
     
     # ssa
@@ -323,9 +323,9 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       elif (done and original_reward == 2000):
         success_num += 1
         if mode == 'human':
-          is_save_buffer = input(">> Success! Save buffer or not? [y/n]: ")
+          is_save_buffer = input(">> Success " + str(success_num) + "th! Save buffer or not? [y/n]: ")
           if is_save_buffer == 'y':
-            human_replay_buffer.save_file()        
+            human_replay_buffer.save_file(os.path.join('collected_data', env_name))        
       elif (done):
         failure_num += 1
       

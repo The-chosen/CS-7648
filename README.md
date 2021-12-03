@@ -64,6 +64,7 @@ python train.py --display pyglet --explore none --no-qp --mode human --isHumanBu
 
 # Run RL with human buffer
 python train.py --display pyglet --explore none --no-qp --mode rl --isHumanBuffer True
+> python train.py --display none --explore none --no-qp --mode rl --isHumanBuffer True
 ```
 - `--display` can be either `none` or `pyglet` (visulization).
 - `--explore` specifies the exploration strategy that the robot uses. 

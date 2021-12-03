@@ -38,7 +38,9 @@ class ReplayBuffer():
         data['size'] = self.size
         data['state_dim'] = self.state_dim
         data['action_dim'] = self.action_dim
-        with open(os.path.join(dir_location, 'params.txt'), 'w') as outfile:
+        if not os.path.exists(dir_location):
+            os.makedirs(dir_location)
+        with open(os.path.join(dir_location, 'params.txt'), 'w+') as outfile:
             json.dump(data, outfile)
 
         np.save(os.path.join(dir_location, 'state.npy'), self.state)
