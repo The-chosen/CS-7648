@@ -110,7 +110,7 @@ def parser():
     prsr.add_argument('--saveModelCheckpointPth', type=str, default='./model_checkpoints')
     prsr.add_argument('--loadModelCheckpointPth', type=str, default='./model_checkpoints/100eps')
     prsr.add_argument('--isLoadModel', type=bool, default=False)
-    prsr.add_argument('--replaceRatio', type=float, derffault=0.4)
+    prsr.add_argument('--replaceRatio', type=float, default=0.4)
     prsr.add_argument('--maxEpisode', type=int, default=501)    
     return prsr
 
@@ -191,7 +191,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
 
     for t in range(max_steps):
 
-      if t >= max_episode:
+      if episode_num >= max_episode:
         print(">> " + str(max_episode) + " episodes done!\n")
         break
       
