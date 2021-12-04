@@ -70,7 +70,7 @@ class ObstacleField(object):
     def random_init(self):
         # TODO: Add some static obs | safety distance(as attr) [attr1: pos, attr2: safety-dis]
         obstacles = []
-        for i in range(50):
+        for i in range(30):
             obstacles.append(self.random_init_obstacle(t = -100))
         poses = self.static_obs_info['pos']
         radius = self.static_obs_info['radius']
