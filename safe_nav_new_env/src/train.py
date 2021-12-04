@@ -343,7 +343,10 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         #   policy.save("./model/ssa1")
         #   break
         if episode_num > 1 and episode_num % 100 == 0:
-          pth = os.path.join(save_model_checkpoint_path, mode, env_name, str(episode_num // 100))
+          if is_human_buffer:
+            pth = os.path.join(save_model_checkpoint_path, 'human', env_name, str(episode_num // 100))
+          else:
+            pth = os.path.join(save_model_checkpoint_path, mode, env_name, str(episode_num // 100))
           policy.save(pth)
 
       # check reward threshold
