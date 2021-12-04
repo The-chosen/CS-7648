@@ -65,6 +65,12 @@ python train.py --display pyglet --explore none --no-qp --mode human --isHumanBu
 # Run RL with human buffer
 python train.py --display pyglet --explore none --no-qp --mode rl --isHumanBuffer True
 > python train.py --display none --explore none --no-qp --mode rl --isHumanBuffer True
+
+# Load model
+# For example1, load 100 eps rl default:
+python train.py --display pyglet --explore none --no-qp --mode rl --isLoadModel True --loadModelCheckpointPth ./model_checkpoints/rl/default/1
+# For example2, load 100 eps baseline2 default:
+python train_baseline2.py --display pyglet --isLoadModel True --loadModelCheckpointPth ./model_checkpoints/baseline2/default/1
 ```
 - `--display` can be either `none` or `pyglet` (visulization).
 - `--explore` specifies the exploration strategy that the robot uses. 
