@@ -112,10 +112,11 @@ def parser():
     prsr.add_argument('--isLoadModel', type=bool, default=False)
     prsr.add_argument('--replaceRatio', type=float, default=0.4)
     prsr.add_argument('--maxEpisode', type=int, default=501)    
+    prsr.add_argument('--trainNum', type=int, default=1)
     return prsr
 
 def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load, \
-    save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode):
+    save_model_checkpoint_path, load_model_checkpoint_path, replace_ratio, max_episode, train_num):
     # testing env
     try:
         if (env_name == 'cross'):
@@ -338,7 +339,8 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       
       
-      if (done):      
+      if (done):
+        print("env.cur_step: ", env.cur_step)      
         total_steps += env.cur_step
         print(f"Train: episode_num {episode_num}, total_steps {total_steps}, reward {episode_reward}, is_qp {qp}, exploration {exploration}, last state {state[:2]}")
         total_rewards.append(episode_reward)
@@ -350,9 +352,9 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         #   break
         if episode_num > 1 and episode_num % 100 == 0:
           if is_human_buffer:
-            pth = os.path.join(save_model_checkpoint_path, 'human', env_name, str(episode_num // 100))
+            pth = os.path.join(save_model_checkpoint_path, train_num, 'human', env_name, str(episode_num // 100))
           else:
-            pth = os.path.join(save_model_checkpoint_path, mode, env_name, str(episode_num // 100))
+            pth = os.path.join(save_model_checkpoint_path, train_num, mode, env_name, str(episode_num // 100))
           policy.save(pth)
 
       # check reward threshold
@@ -411,7 +413,8 @@ if __name__ == '__main__':
           save_model_checkpoint_path=args.saveModelCheckpointPth,
           load_model_checkpoint_path=args.loadModelCheckpointPth, 
           replace_ratio=args.replaceRatio,
-          max_episode=args.maxEpisode)
+          max_episode=args.maxEpisode,
+          train_num=args.trainNum)
       for j, n in enumerate(reward_records):
         all_reward_records[j].append(n)
       print(all_reward_records)
