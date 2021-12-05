@@ -110,7 +110,7 @@ class PygletDisplay(BaseDisplay):
         self.inbounds_region_geoms_xform.append(xform)
 
     def _add_robot(self):
-        vertices = [[0.02, 0], [-0.02, 0], [-0.01, 0.05], [0.01, 0.05]]      
+        vertices = [[-0.025, 0.02], [-0.025, -0.02], [0.025, -0.01], [0.025, 0.01]]      
         geom = rendering.make_polygon(vertices)
         xform = rendering.Transform()
         geom.set_color(0.0, 1.0, 1.0)
@@ -156,7 +156,7 @@ class PygletDisplay(BaseDisplay):
     def robot_at_loc(self, x, y, h, is_ssa = False):
         if self.robot is not None:
             self.robot[1].set_translation(x, y)
-            self.robot[1].set_rotation(h * 180/(math.pi))
+            self.robot[1].set_rotation(h)
         if is_ssa:
             self.robot[0].set_color(0.9, 0.0, 0.0)
         else:

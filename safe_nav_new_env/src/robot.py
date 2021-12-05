@@ -18,7 +18,7 @@ class DoubleIntegratorRobot():
 
     @property
     def position(self):
-        heading_angle = math.atan2(self.vel[1], self.vel[1])
+        heading_angle = math.atan2(self.vel[1], self.vel[0])
         return (self.pos[0], self.pos[1], heading_angle)
 
     def steer(self, vx_speed_change, vy_speed_change):

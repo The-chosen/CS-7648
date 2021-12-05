@@ -190,6 +190,13 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       policy.load(load_model_checkpoint_path) # e.g. ./model_checkpoints/100eps
 
     for t in range(max_steps):
+      if is_load:
+        if episode_num >= 10:
+          print(">> collision_num: ", collision_num)
+          print(">> failure_num: ", failure_num)
+          print(">> success_num: ", success_num)
+          break
+      
 
       if episode_num >= max_episode:
         print(">> " + str(max_episode) + " episodes done!\n")
@@ -243,7 +250,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       #action, is_safe = shield_controller.probshield_control(state[:4], unsafe_obstacles, fx, gx, action, env.field, unsafe_obstacle_ids, unsafe_obstacles, env.cur_step)
       
       # YY comment
-      # action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
+      action, is_safe, is_unavoidable, danger_obs = safe_controller.get_safe_control(state[:4], unsafe_obstacles, fx, gx, action)
       
       
       #is_safe = False

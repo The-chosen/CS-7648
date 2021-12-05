@@ -190,6 +190,12 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       policy.load(load_model_checkpoint_path) # e.g. ./model_checkpoints/100eps
 
     for t in range(max_steps):
+      if is_load:
+        if episode_num >= 10:
+          print(">> collision_num: ", collision_num)
+          print(">> failure_num: ", failure_num)
+          print(">> success_num: ", success_num)
+          break
 
       if episode_num >= max_episode:
         print(">> " + str(max_episode) + " episodes done!\n")
