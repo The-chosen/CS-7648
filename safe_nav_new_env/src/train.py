@@ -187,6 +187,9 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
 
     is_meet_requirement = False
     reward_records = []
+    
+    # avg steps
+    avg_step = 0
 
     # Load Model
     if is_load:
@@ -198,6 +201,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
           print(">> collision_num: ", collision_num)
           print(">> failure_num: ", failure_num)
           print(">> success_num: ", success_num)
+          print(">> success average step: ", avg_step / success_num if success_num != 0 else 0)
           print("total_rewards: ", total_rewards)
           break
 
@@ -336,6 +340,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         #safe_controller.plot_control_subspace(old_state[:4], unsafe_obstacles, fx, gx, original_action)
         #break
       elif (done and original_reward == 2000):
+        avg_step += env.cur_step
         success_num += 1
         if mode == 'human':
           is_save_buffer = input(">> Success " + str(success_num) + "th! Save buffer or not? [y/n]: ")
@@ -350,6 +355,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       if (done):
         # # steps
         # print("env.cur_step: ", env.cur_step)      
+        
         total_steps += env.cur_step
         print(f"Train: episode_num {episode_num}, total_steps {total_steps}, reward {episode_reward}, is_qp {qp}, exploration {exploration}, last state {state[:2]}")
         total_rewards.append(episode_reward)
