@@ -32,7 +32,7 @@ from cbf import ControlBarrierFunction
 # TODO: switch to pyglet
 # https://github.com/openai/multiagent-particle-envs
 from base_display import BaseDisplay
-from pyglet_display import PygletDisplay
+# from pyglet_display import PygletDisplay
 
 from human_demo import Human_Intervention
 import os
