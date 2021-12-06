@@ -61,16 +61,19 @@ FIELD_Y_BOUNDS = (-0.95, 0.95)
 
 class ObstacleField(object):
     
-    def __init__(self, static_obs_info):
+    def __init__(self, static_obs_info, is_default):
         self.x_bounds = FIELD_X_BOUNDS
         self.y_bounds = FIELD_Y_BOUNDS
         self.static_obs_info = static_obs_info
+        self.is_default = is_default
         self.random_init()
+        
 
     def random_init(self):
         # TODO: Add some static obs | safety distance(as attr) [attr1: pos, attr2: safety-dis]
         obstacles = []
-        for i in range(5):
+        num_dy_obs = 50 if self.is_default else 30
+        for i in range(num_dy_obs):
             obstacles.append(self.random_init_obstacle(t = -100))
         poses = self.static_obs_info['pos']
         radius = self.static_obs_info['radius']

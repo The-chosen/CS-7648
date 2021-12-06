@@ -37,6 +37,7 @@ from pyglet_display import PygletDisplay
 from human_demo import Human_Intervention
 import os
 
+import csv
 '''
 random.seed(1)
 np.random.seed(1)
@@ -71,12 +72,12 @@ def display_for_name( dname ):
       return BaseDisplay()
 
 
-def run_kwargs( params ):
+def run_kwargs( params, is_default ):
     in_bounds = bounds.BoundsRectangle( **params['in_bounds'] )
     goal_bounds = bounds.BoundsRectangle( **params['goal_bounds'] )
     min_dist = params['min_dist']
     # TODO 这里传param.py的参数
-    ret = { 'field': dynamic_obstacle.ObstacleField(params['static_obstacles']),
+    ret = { 'field': dynamic_obstacle.ObstacleField(params['static_obstacles'], is_default),
             'robot_state': robot.DoubleIntegratorRobot( **( params['initial_robot_state'] ) ),
             'in_bounds': in_bounds,
             'goal_bounds': goal_bounds,
@@ -111,7 +112,7 @@ def parser():
     prsr.add_argument('--loadModelCheckpointPth', type=str, default='./model_checkpoints/100eps')
     prsr.add_argument('--isLoadModel', type=bool, default=False)
     prsr.add_argument('--replaceRatio', type=float, default=0.4)
-    prsr.add_argument('--maxEpisode', type=int, default=501)    
+    prsr.add_argument('--maxEpisode', type=int, default=201)    
     prsr.add_argument('--trainNum', type=int, default=1)
     return prsr
 
@@ -129,7 +130,7 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         print(e)
         return
     display = display_for_name(display_name)
-    env_params = run_kwargs(params)
+    env_params = run_kwargs(params, env_name=='default')
     
     # rl policy
     obstacle_num = 3
@@ -197,10 +198,12 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
           print(">> collision_num: ", collision_num)
           print(">> failure_num: ", failure_num)
           print(">> success_num: ", success_num)
+          print("total_rewards: ", total_rewards)
           break
 
       if episode_num >= max_episode:
         print(">> " + str(max_episode) + " episodes done!\n")
+        print("total_rewards: ", total_rewards)
         break
       
       
@@ -256,11 +259,11 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       #is_safe = False
       # take safe action
-      print(f"vehciel {state[:4]}, obs {state[4:]}")
+      # print(f"vehciel {state[:4]}, obs {state[4:]}")
       s_new, reward, done, info = env.step(action, is_safe, unsafe_obstacle_ids) 
       
-      import pdb
-      pdb.set_trace()
+      # import pdb
+      # pdb.set_trace()
       original_reward = reward
       episode_reward += original_reward
       # add the novelty to reward when using rnd
@@ -345,7 +348,8 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       
       if (done):
-        print("env.cur_step: ", env.cur_step)      
+        # # steps
+        # print("env.cur_step: ", env.cur_step)      
         total_steps += env.cur_step
         print(f"Train: episode_num {episode_num}, total_steps {total_steps}, reward {episode_reward}, is_qp {qp}, exploration {exploration}, last state {state[:2]}")
         total_rewards.append(episode_reward)
@@ -355,15 +359,39 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
         # if (episode_num >= 100):
         #   policy.save("./model/ssa1")
         #   break
-        if episode_num > 1 and episode_num % 100 == 0:
+        if episode_num > 1 and episode_num % 40 == 0:
           if is_human_buffer:
-            pth = os.path.join(save_model_checkpoint_path, train_num, 'human', env_name, str(episode_num // 100))
+            pth = os.path.join(save_model_checkpoint_path, str(train_num), 'human', env_name, str(episode_num // 40))
+            dir_location = os.path.join('reward_record', str(train_num), 'human', env_name)
+            if not os.path.exists(dir_location):
+              os.makedirs(dir_location)
+            np.save(os.path.join(dir_location, "rewards.npy"), total_rewards)
           else:
-            pth = os.path.join(save_model_checkpoint_path, train_num, mode, env_name, str(episode_num // 100))
+            pth = os.path.join(save_model_checkpoint_path, str(train_num), mode, env_name, str(episode_num // 40))
+            dir_location = os.path.join('reward_record', str(train_num), mode, env_name)
+            if not os.path.exists(dir_location):
+              os.makedirs(dir_location)
+            np.save(os.path.join(dir_location, "rewards.npy"), total_rewards)
           policy.save(pth)
           # TODO
-          np.save("rewards.npy", total_rewards)
+          
+          
 
+        # if is_human_buffer:
+        #   with open(os.path.join('reward_record', train_num, 'human', env_name), 'w', newline='') as csvfile:
+        #     spamwriter = csv.writer(csvfile, delimiter=' ',
+        #                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        #     spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
+        #   # np.save("rewards.npy", total_rewards)
+        # else:
+        #   with open(os.path.join('reward_record', train_num, mode, env_name), 'w', newline='') as csvfile:
+        #     spamwriter = csv.writer(csvfile, delimiter=' ',
+        #                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        #     spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
+            
+            
+            
+            
       # check reward threshold
       '''
       if (len(total_rewards) >= 20 and np.mean(total_rewards[-20:]) >= 1900 and not is_meet_requirement):
