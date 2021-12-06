@@ -74,29 +74,56 @@ class Env(object):
 		cx,cy,_ = self.robot_state.position
 		obstacle_id, obstacle_pos, _ = self.find_nearest_obstacle(cx,cy)
 		state = [cx, cy, self.robot_state.v_x, self.robot_state.v_y]
-		relative_pos = [cx - obstacle_pos[0], cy - obstacle_pos[1]]
+		relative_pos = []
+		for obs in obstacle_pos:
+			relative_pos.append(cx - obs[0])
+			relative_pos.append(cy - obs[1])
+		#relative_pos = [cx - obstacle_pos[0], cy - obstacle_pos[1]]
 		return np.array(state + relative_pos)
 
 	def find_nearest_obstacle(self, cx, cy, unsafe_obstacle_ids = []):
 		obstlocs = self.field.obstacle_locations(self.cur_step, cx, cy, self.min_dist * 5)
-		nearest_obstacle = None
-		nearest_obstacle_id = -1
-		nearest_obstacle_dist = np.float("inf")    
+		nearest_obstacle = [[np.inf,np.inf], [np.inf, np.inf], [np.inf, np.inf]]
+		nearest_obstacle_id = [-1, -2, -3]
+		nearest_obstacle_dist = [np.inf, np.inf, np.inf]
+		threshold_dist = np.float("inf")    
 		collisions = ()
-		for i,x,y in obstlocs:
+
+		for i,x,y,r in obstlocs:
 			self.display.obstacle_at_loc(i,x,y)
-			if (i in unsafe_obstacle_ids):
-				pass
-				self.display.obstacle_set_color(i, 'blue')
+			#if (i in unsafe_obstacle_ids):
+			#		pass
+			#	self.display.obstacle_set_color(i, 'blue')
 			dist, ox, oy = l2( (cx,cy), (x,y) )
+			if (r != 0):
+				dist -= r
 			if dist < self.min_dist:
 				collisions += (i,)
-			if dist < nearest_obstacle_dist:
-				nearest_obstacle_dist = dist
-				nearest_obstacle = [ox, oy]
-				nearest_obstacle_id = i
-		if (nearest_obstacle_id == -1):
-			nearest_obstacle = [-1, -1]
+
+			if (len(nearest_obstacle_id) < 3):
+				nearest_obstacle_dist.append(dist)
+				threshold_dist = np.max(nearest_obstacle_dist)
+				nearest_obstacle_id.append(i)
+				if (r != 0):
+					ox += r*(cx-ox)/dist
+					oy += r*(cy-oy)/dist
+					nearest_obstacle.append([ox, oy])
+				else:
+					nearest_obstacle.append([ox, oy])
+
+			elif dist < threshold_dist:								
+					idx = np.argmax(nearest_obstacle_dist)
+					nearest_obstacle_dist[idx] = dist
+					threshold_dist = np.max(nearest_obstacle_dist)
+					if (r != 0):
+						ox += r*(cx-ox)/dist
+						oy += r*(cy-oy)/dist
+						nearest_obstacle[idx] = [ox, oy]
+					else:
+						nearest_obstacle[idx] = [ox, oy]
+					nearest_obstacle_id[idx] = i
+		#if (nearest_obstacle_id == -1):
+		#	nearest_obstacle = [-1, -1]
 
 		for (x,y), r in zip(self.static_obs['pos'], self.static_obs['radius']):
 			dist, _, _ = l2( (cx,cy), (x,y) )
@@ -133,7 +160,11 @@ class Env(object):
 		nearest_obstacle_id, nearest_obstacle, collisions = self.find_nearest_obstacle(cx, cy, unsafe_obstacle_ids)
 
 		next_robot_state = [cx, cy, self.robot_state.v_x, self.robot_state.v_y]
-		relative_pos = [cx - nearest_obstacle[0], cy - nearest_obstacle[1]]
+		relative_pos = []
+		for obs in nearest_obstacle:
+			relative_pos.append(cx - obs[0])
+			relative_pos.append(cy - obs[1])
+
 		next_state = next_robot_state + relative_pos
 
 		# done

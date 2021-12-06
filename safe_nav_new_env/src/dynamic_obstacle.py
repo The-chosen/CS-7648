@@ -70,7 +70,7 @@ class ObstacleField(object):
     def random_init(self):
         # TODO: Add some static obs | safety distance(as attr) [attr1: pos, attr2: safety-dis]
         obstacles = []
-        for i in range(30):
+        for i in range(5):
             obstacles.append(self.random_init_obstacle(t = -100))
         poses = self.static_obs_info['pos']
         radius = self.static_obs_info['radius']
@@ -131,7 +131,7 @@ class ObstacleField(object):
         locs = []
         for i, obst in enumerate(self.obstacles):
             x, y =  obst.pos_update(t)
-            loc = (i, x, y)
+            loc = (i, x, y, obst.r)
             if not (self.x_bounds[0] <= x <= self.x_bounds[1] and self.y_bounds[0] <= y <= self.y_bounds[1]):
                 # out of bound, re-initialize 
                 self.obstacles[i] = self.random_init_obstacle(t, vehicle_x, vehicle_y, min_dist)

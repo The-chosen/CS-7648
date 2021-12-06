@@ -132,10 +132,11 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
     env_params = run_kwargs(params)
     
     # rl policy
+    obstacle_num = 3
     robot_state_size = 4 #(x,y,v_x,v_y)
     robot_action_size = 2
     nearest_obstacle_state_size = 2 #(delta_x, delta_y)
-    state_dim = robot_state_size + nearest_obstacle_state_size
+    state_dim = robot_state_size + nearest_obstacle_state_size * obstacle_num
 
     model_update_freq = 1000
     env = simu_env.Env(display, **(env_params))
@@ -255,7 +256,11 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
       
       #is_safe = False
       # take safe action
+      print(f"vehciel {state[:4]}, obs {state[4:]}")
       s_new, reward, done, info = env.step(action, is_safe, unsafe_obstacle_ids) 
+      
+      import pdb
+      pdb.set_trace()
       original_reward = reward
       episode_reward += original_reward
       # add the novelty to reward when using rnd
@@ -356,6 +361,8 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
           else:
             pth = os.path.join(save_model_checkpoint_path, train_num, mode, env_name, str(episode_num // 100))
           policy.save(pth)
+          # TODO
+          np.save("rewards.npy", total_rewards)
 
       # check reward threshold
       '''
