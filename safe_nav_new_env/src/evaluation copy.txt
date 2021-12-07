@@ -1,3 +1,5 @@
+1st train
+Rl
 Collision num: 8, Failure num: 0, Success num:2, Avg-steps: 102.5
 Collision num: 8, Failure num: 0, Success num:2, Avg-steps: 102.5
 Collision num: 7, Failure num: 0, Success num:3, Avg-steps: 102.66666666666667
@@ -8,6 +10,8 @@ Collision num: 5, Failure num: 0, Success num:5, Avg-steps: 42.2
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.333333333333336
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.0
 Collision num: 5, Failure num: 0, Success num:5, Avg-steps: 42.6
+
+Safe
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 136.3
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 138.9
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 134.8
@@ -18,6 +22,9 @@ Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 65.5
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 96.9
 Collision num: 0, Failure num: 1, Success num:9, Avg-steps: 86.22222222222223
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 100.2
+
+
+Human
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
@@ -28,6 +35,10 @@ Collision num: 7, Failure num: 0, Success num:3, Avg-steps: 52.666666666666664
 Collision num: 7, Failure num: 0, Success num:3, Avg-steps: 52.666666666666664
 Collision num: 5, Failure num: 0, Success num:5, Avg-steps: 52.4
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 52.25
+
+
+2nd train
+Rl
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 10, Failure num: 0, Success num:0, Avg-steps: 0
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 102.5
@@ -38,6 +49,9 @@ Collision num: 10, Failure num: 0, Success num:0, Avg-steps: 0
 Collision num: 8, Failure num: 0, Success num:2, Avg-steps: 42.0
 Collision num: 5, Failure num: 0, Success num:5, Avg-steps: 42.6
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.666666666666664
+
+
+Safe
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 134.6
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 135.6
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 136.9
@@ -48,6 +62,9 @@ Collision num: 0, Failure num: 1, Success num:9, Avg-steps: 88.44444444444444
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 69.4
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 91.7
 Collision num: 0, Failure num: 1, Success num:9, Avg-steps: 96.55555555555556
+
+
+Human
 Collision num: 5, Failure num: 0, Success num:5, Avg-steps: 102.4
 Collision num: 8, Failure num: 0, Success num:2, Avg-steps: 102.0
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 102.0
@@ -58,6 +75,9 @@ Collision num: 1, Failure num: 9, Success num:0, Avg-steps: 0
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 104.5
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 89.5
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 71.0
+
+3rd train
+Rl
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
@@ -68,6 +88,8 @@ Collision num: 7, Failure num: 0, Success num:3, Avg-steps: 70.33333333333333
 Collision num: 6, Failure num: 0, Success num:4, Avg-steps: 43.75
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.166666666666664
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.333333333333336
+
+Safe
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 136.6
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 143.4
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 133.0
@@ -78,6 +100,8 @@ Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 55.8
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 69.7
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 110.1
 Collision num: 0, Failure num: 0, Success num:10, Avg-steps: 99.5
+
+Human
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 0, Failure num: 10, Success num:0, Avg-steps: 0
 Collision num: 1, Failure num: 5, Success num:4, Avg-steps: 482.25
@@ -88,4 +112,3 @@ Collision num: 8, Failure num: 0, Success num:2, Avg-steps: 52.0
 Collision num: 2, Failure num: 0, Success num:8, Avg-steps: 42.5
 Collision num: 2, Failure num: 0, Success num:8, Avg-steps: 42.25
 Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 42.333333333333336
-Collision num: 4, Failure num: 0, Success num:6, Avg-steps: 102.16666666666667
