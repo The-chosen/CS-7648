@@ -1,8 +1,8 @@
 # 1st Training
-print('==========================================================================================')
-print('==========================================================================================')
-print('>> 1st Training')
-print('Human')
+echo '==========================================================================================' 
+echo '==========================================================================================' 
+echo '>> 1st Training' 
+echo 'Human' 
 ## Human
 ### env-default
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --trainNum 1 
@@ -11,10 +11,10 @@ python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --env cross --trainNum 1 
 
 
-print('==========================================================================================')
-print('rl')
+echo '==========================================================================================' 
+echo 'rl' 
 
-## Baseline1(rl) 
+## Baseline1(rl  
 
 ### env-default
 python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 1 
@@ -23,8 +23,8 @@ python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 1
 python train.py --display none  --no-qp --mode rl --explore rnd --env cross --trainNum 1 
 
 
-print('==========================================================================================')
-print('safe')
+echo '==========================================================================================' 
+echo 'safe' 
 
 ## Safe
 ### env-default
@@ -35,7 +35,7 @@ python train.py --display none  --no-qp --mode safe --explore rnd --env cross --
 
 
 
-print('==========================================================================================')
+echo '==========================================================================================' 
 
 
 
@@ -51,9 +51,9 @@ print('=========================================================================
 
 
 # 2st Training
-print('==========================================================================================')
-print('>> 1st Training')
-print('Human')
+echo '==========================================================================================' 
+echo '>> 1st Training' 
+echo 'Human' 
 ## Human
 ### env-default
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --trainNum 2
@@ -61,9 +61,9 @@ python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore
 ### env-cross
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --env cross --trainNum 2
 
-print('==========================================================================================')
-print('rl')
-## Baseline1(rl) 
+echo '==========================================================================================' 
+echo 'rl' 
+## Baseline1(rl  
 ### env-default
 python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 2
 
@@ -71,8 +71,8 @@ python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 2
 python train.py --display none  --no-qp --mode rl --explore rnd --env cross --trainNum 2
 
 
-print('==========================================================================================')
-print('safe')
+echo '==========================================================================================' 
+echo 'safe' 
 ## Safe
 ### env-default
 python train.py --display none  --no-qp --mode safe --explore rnd --trainNum 2
@@ -82,7 +82,7 @@ python train.py --display none  --no-qp --mode safe --explore rnd --env cross --
 
 
 
-print('==========================================================================================')
+echo '==========================================================================================' 
 
 
 
@@ -100,9 +100,9 @@ print('=========================================================================
 
 
 # 3st Training
-print('==========================================================================================')
-print('>> 1st Training')
-print('Human')
+echo '==========================================================================================' 
+echo '>> 1st Training' 
+echo 'Human' 
 ## Human
 ### env-default
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --trainNum 3
@@ -111,9 +111,9 @@ python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore
 python train.py --display none  --no-qp --mode rl --isHumanBuffer True --explore rnd --env cross --trainNum 3 
 
 
-print('==========================================================================================')
-print('rl')
-## Baseline1(rl) 
+echo '==========================================================================================' 
+echo 'rl' 
+## Baseline1(rl  
 ### env-default
 python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 3
 
@@ -121,8 +121,8 @@ python train.py --display none  --no-qp --mode rl --explore rnd --trainNum 3
 python train.py --display none  --no-qp --mode rl --explore rnd --env cross --trainNum 3
 
 
-print('==========================================================================================')
-print('safe')
+echo '==========================================================================================' 
+echo 'safe' 
 
 ## Safe
 ### env-default
@@ -132,4 +132,4 @@ python train.py --display none  --no-qp --mode safe --explore rnd --trainNum 3
 python train.py --display none  --no-qp --mode safe --explore rnd --env cross --trainNum 3
 
 
-print('==========================================================================================')
+echo '==========================================================================================' 
