@@ -198,11 +198,16 @@ def main(display_name, env_name, exploration, qp, is_human_buffer, mode, is_load
     for t in range(max_steps):
       if is_load:
         if episode_num >= 10:
+          scc_steps = avg_step / success_num if success_num != 0 else 0
           print(">> collision_num: ", collision_num)
           print(">> failure_num: ", failure_num)
           print(">> success_num: ", success_num)
-          print(">> success average step: ", avg_step / success_num if success_num != 0 else 0)
+          print(">> success average step: ", scc_steps)
           print("total_rewards: ", total_rewards)
+          with open("evaluation.txt", "a") as file:
+            # Writing data to a file
+            file.write("Collision num: " + str(collision_num) + ", Failure num: " + str(failure_num) + ", Success num:" + str(success_num) + ", Avg-steps: " + str(scc_steps) + '\n')
+
           break
 
       if episode_num >= max_episode:
