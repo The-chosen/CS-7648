@@ -1,11 +1,11 @@
 # Safe-and-Sample-efficient-Reinforcement-Learning-for-Clustered-Dynamic-Uncertain-Environments
-
+# (Please check the paper code in https://github.com/hychen-naza/SSA-RL, this repo is a modified version)
 ## Table of Contents
 - [Introduction](#Introduction)
 - [Install](#install)
 - [Usage](#usage)
 
-## Introduction (Please check the paper code in https://github.com/hychen-naza/SSA-RL, this repo is a modified version)
+## Introduction 
 
 
 We provide code for evaluate the safety and sample-efficiency of our proposed RL framework.
