@@ -5,7 +5,9 @@
 - [Install](#install)
 - [Usage](#usage)
 
-## Introduction
+## Introduction (Please check the paper code in https://github.com/hychen-naza/SSA-RL, this repo is a modified version)
+
+
 We provide code for evaluate the safety and sample-efficiency of our proposed RL framework.
 
 For safety, we use Safe Set Algorithm (SSA).   
